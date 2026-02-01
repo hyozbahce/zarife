@@ -1,0 +1,62 @@
+# General
+.DS_Store
+.idea/
+.vscode/
+*.log
+*.tmp
+tmp/
+
+# Agent configurations
+.agents/
+.claude/
+.codex/
+.opencode/
+
+# Node modules
+node_modules/
+npm-debug.log
+yarn-error.log
+pnpm-debug.log*
+
+# Next.js / Vite / React
+.next/
+dist/
+build/
+.env
+.env.*
+!.env.example
+coverage/
+
+# .NET / C#
+bin/
+obj/
+publish/
+*.user
+*.suo
+*.pdb
+project.lock.json
+project.fragment.lock.json
+artifacts/
+
+# Expo / React Native
+.expo/
+web-build/
+*.jks
+*.p8
+*.p12
+*.key
+*.mobileprovision
+*.orig.*
+
+# Docker
+docker-compose.override.yml
+
+# Testing
+test-results/
+playwright-report/
+blob-report/
+
+# MinIO Local Data
+minio_data/
+postgres_data/
+redis_data/
