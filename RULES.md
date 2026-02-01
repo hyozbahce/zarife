@@ -21,6 +21,7 @@
 - Never install a skill with the `-y` or `-g` parameters
 - Only install skills for these agents: Antigravity, Claude Code, Codex, OpenCode
 
+
 ## Session Startup
 
 - At the start of each session, ask which skill(s) to load with find-skills skill

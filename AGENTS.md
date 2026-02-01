@@ -59,6 +59,16 @@ zarife/
 - [plan.md](plan.md) - Detailed implementation plan with phases
 - [RULES.md](RULES.md) - Agent rules and session notes
 
+## Project-Specific Rules
+
+- Always generate EF Core migrations to `api/src/Zarife.Infrastructure/Data/Migrations` using:
+```
+dotnet ef migrations add Initial \
+  --project api/src/Zarife.Infrastructure \
+  --startup-project api/src/Zarife.API \
+  -o Data/Migrations
+```
+
 ---
 
 ## Team

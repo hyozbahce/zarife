@@ -46,7 +46,7 @@ namespace Zarife.Infrastructure.Data.Migrations
                         .IsUnique()
                         .HasDatabaseName("RoleNameIndex");
 
-                    b.ToTable("AspNetRoles", (string)null);
+                    b.ToTable("ApplicationRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -70,7 +70,7 @@ namespace Zarife.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetRoleClaims", (string)null);
+                    b.ToTable("ApplicationRoleClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserClaim<System.Guid>", b =>
@@ -94,7 +94,7 @@ namespace Zarife.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserClaims", (string)null);
+                    b.ToTable("ApplicationUserClaims", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserLogin<System.Guid>", b =>
@@ -115,7 +115,7 @@ namespace Zarife.Infrastructure.Data.Migrations
 
                     b.HasIndex("UserId");
 
-                    b.ToTable("AspNetUserLogins", (string)null);
+                    b.ToTable("ApplicationUserLogins", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserRole<System.Guid>", b =>
@@ -130,7 +130,7 @@ namespace Zarife.Infrastructure.Data.Migrations
 
                     b.HasIndex("RoleId");
 
-                    b.ToTable("AspNetUserRoles", (string)null);
+                    b.ToTable("ApplicationUserRoles", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityUserToken<System.Guid>", b =>
@@ -149,7 +149,7 @@ namespace Zarife.Infrastructure.Data.Migrations
 
                     b.HasKey("UserId", "LoginProvider", "Name");
 
-                    b.ToTable("AspNetUserTokens", (string)null);
+                    b.ToTable("ApplicationUserTokens", (string)null);
                 });
 
             modelBuilder.Entity("Zarife.Core.Entities.School", b =>
@@ -184,39 +184,6 @@ namespace Zarife.Infrastructure.Data.Migrations
                         .IsUnique();
 
                     b.ToTable("Schools");
-                });
-
-            modelBuilder.Entity("Zarife.Core.Entities.User", b =>
-                {
-                    b.Property<Guid>("Id")
-                        .ValueGeneratedOnAdd()
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime>("CreatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.Property<string>("Email")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<string>("ProfileJson")
-                        .HasColumnType("text");
-
-                    b.Property<string>("Role")
-                        .IsRequired()
-                        .HasColumnType("text");
-
-                    b.Property<Guid?>("TenantId")
-                        .HasColumnType("uuid");
-
-                    b.Property<DateTime?>("UpdatedAt")
-                        .HasColumnType("timestamp with time zone");
-
-                    b.HasKey("Id");
-
-                    b.HasIndex("TenantId");
-
-                    b.ToTable("User");
                 });
 
             modelBuilder.Entity("Zarife.Infrastructure.Identity.ApplicationUser", b =>
@@ -293,7 +260,7 @@ namespace Zarife.Infrastructure.Data.Migrations
                     b.HasIndex("TenantId", "Email")
                         .IsUnique();
 
-                    b.ToTable("AspNetUsers", (string)null);
+                    b.ToTable("ApplicationUsers", (string)null);
                 });
 
             modelBuilder.Entity("Microsoft.AspNetCore.Identity.IdentityRoleClaim<System.Guid>", b =>
@@ -345,20 +312,6 @@ namespace Zarife.Infrastructure.Data.Migrations
                         .HasForeignKey("UserId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
-                });
-
-            modelBuilder.Entity("Zarife.Core.Entities.User", b =>
-                {
-                    b.HasOne("Zarife.Core.Entities.School", "Tenant")
-                        .WithMany("Users")
-                        .HasForeignKey("TenantId");
-
-                    b.Navigation("Tenant");
-                });
-
-            modelBuilder.Entity("Zarife.Core.Entities.School", b =>
-                {
-                    b.Navigation("Users");
                 });
 #pragma warning restore 612, 618
         }
