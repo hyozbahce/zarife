@@ -14,6 +14,8 @@ import ClassesPage from "@/pages/school/classes-page"
 import StudentsPage from "@/pages/school/students-page"
 import AnalyticsPage from "@/pages/analytics/analytics-page"
 import ReaderPage from "@/pages/reader/reader-page"
+import TeacherDashboardPage from "@/pages/school/teacher-dashboard-page"
+import CurriculumPage from "@/pages/school/curriculum-page"
 import { useAuth } from "@/contexts/auth-context"
 import { Loader2 } from "lucide-react"
 
@@ -73,6 +75,8 @@ function App() {
         {/* School Management */}
         <Route path="/school/classes" element={<DashboardRoute><ClassesPage /></DashboardRoute>} />
         <Route path="/school/students" element={<DashboardRoute><StudentsPage /></DashboardRoute>} />
+        <Route path="/school/teacher" element={<DashboardRoute><TeacherDashboardPage /></DashboardRoute>} />
+        <Route path="/curriculum" element={<DashboardRoute><CurriculumPage /></DashboardRoute>} />
 
         {/* Analytics */}
         <Route path="/analytics" element={<DashboardRoute><AnalyticsPage /></DashboardRoute>} />

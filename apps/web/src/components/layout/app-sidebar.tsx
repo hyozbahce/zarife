@@ -79,6 +79,12 @@ const navMain: NavItem[] = [
 
 const schoolNav: NavItem[] = [
   {
+    title: "Teacher Hub",
+    url: "/school/teacher",
+    icon: GraduationCap,
+    roles: ["Teacher", "SchoolAdmin"],
+  },
+  {
     title: "Classes",
     url: "/school/classes",
     icon: GraduationCap,
