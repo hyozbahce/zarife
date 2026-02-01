@@ -1,98 +1,105 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
+import { useEffect, useState } from 'react';
+import { View, Text, FlatList, TouchableOpacity, StyleSheet, ActivityIndicator, useColorScheme } from 'react-native';
+import { useRouter } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
+import api from '../../services/api';
 
-import { HelloWave } from '@/components/hello-wave';
-import ParallaxScrollView from '@/components/parallax-scroll-view';
-import { ThemedText } from '@/components/themed-text';
-import { ThemedView } from '@/components/themed-view';
-import { Link } from 'expo-router';
+interface Book {
+  id: string;
+  title: string;
+  author?: string;
+  language: string;
+  targetAgeMin: number;
+  targetAgeMax: number;
+  durationMinutes: number;
+  status: string;
+  pageCount: number;
+}
 
-export default function HomeScreen() {
+export default function LibraryScreen() {
+  const [books, setBooks] = useState<Book[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+  const router = useRouter();
+  const colorScheme = useColorScheme();
+  const isDark = colorScheme === 'dark';
+
+  useEffect(() => {
+    loadBooks();
+  }, []);
+
+  const loadBooks = async () => {
+    try {
+      const res = await api.get('/api/books?status=Published');
+      setBooks(res.data);
+    } catch {
+      // handle error
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const renderBook = ({ item }: { item: Book }) => (
+    <TouchableOpacity
+      style={[styles.card, isDark && styles.cardDark]}
+      onPress={() => router.push(`/book/${item.id}`)}
+    >
+      <View style={[styles.cover, { backgroundColor: isDark ? '#374151' : '#e0e7ff' }]}>
+        <Ionicons name="book" size={40} color="#6366f1" />
+      </View>
+      <View style={styles.info}>
+        <Text style={[styles.title, isDark && styles.textDark]} numberOfLines={2}>{item.title}</Text>
+        {item.author && <Text style={styles.author}>{item.author}</Text>}
+        <View style={styles.meta}>
+          <Text style={styles.metaText}>{item.durationMinutes}m</Text>
+          <Text style={styles.metaText}>Ages {item.targetAgeMin}-{item.targetAgeMax}</Text>
+        </View>
+      </View>
+    </TouchableOpacity>
+  );
+
+  if (isLoading) {
+    return (
+      <View style={[styles.center, isDark && styles.containerDark]}>
+        <ActivityIndicator size="large" color="#6366f1" />
+      </View>
+    );
+  }
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <View style={[styles.container, isDark && styles.containerDark]}>
+      {books.length === 0 ? (
+        <View style={styles.center}>
+          <Ionicons name="library-outline" size={64} color="#9ca3af" />
+          <Text style={[styles.emptyText, isDark && styles.textDark]}>No books available yet</Text>
+        </View>
+      ) : (
+        <FlatList
+          data={books}
+          renderItem={renderBook}
+          keyExtractor={(item) => item.id}
+          numColumns={2}
+          contentContainerStyle={styles.list}
+          columnWrapperStyle={styles.row}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <Link href="/modal">
-          <Link.Trigger>
-            <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-          </Link.Trigger>
-          <Link.Preview />
-          <Link.Menu>
-            <Link.MenuAction title="Action" icon="cube" onPress={() => alert('Action pressed')} />
-            <Link.MenuAction
-              title="Share"
-              icon="square.and.arrow.up"
-              onPress={() => alert('Share pressed')}
-            />
-            <Link.Menu title="More" icon="ellipsis">
-              <Link.MenuAction
-                title="Delete"
-                icon="trash"
-                destructive
-                onPress={() => alert('Delete pressed')}
-              />
-            </Link.Menu>
-          </Link.Menu>
-        </Link>
-
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
-        </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      )}
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
-  },
-  stepContainer: {
-    gap: 8,
-    marginBottom: 8,
-  },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
-  },
+  container: { flex: 1, backgroundColor: '#f9fafb' },
+  containerDark: { backgroundColor: '#111827' },
+  center: { flex: 1, justifyContent: 'center', alignItems: 'center' },
+  list: { padding: 12 },
+  row: { gap: 12 },
+  card: { flex: 1, backgroundColor: '#fff', borderRadius: 16, overflow: 'hidden', marginBottom: 12, shadowColor: '#000', shadowOffset: { width: 0, height: 2 }, shadowOpacity: 0.05, shadowRadius: 8, elevation: 2 },
+  cardDark: { backgroundColor: '#1f2937' },
+  cover: { height: 140, justifyContent: 'center', alignItems: 'center' },
+  info: { padding: 12 },
+  title: { fontSize: 14, fontWeight: '600', color: '#1f2937', marginBottom: 4 },
+  textDark: { color: '#f9fafb' },
+  author: { fontSize: 12, color: '#6b7280', marginBottom: 8 },
+  meta: { flexDirection: 'row', gap: 8 },
+  metaText: { fontSize: 11, color: '#9ca3af' },
+  emptyText: { fontSize: 16, color: '#6b7280', marginTop: 12 },
 });
