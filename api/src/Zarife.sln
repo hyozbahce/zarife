@@ -9,6 +9,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zarife.Core", "Zarife.Core\
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zarife.Infrastructure", "Zarife.Infrastructure\Zarife.Infrastructure.csproj", "{B767544E-1B45-474F-92F2-4ADA590981C0}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Zarife.AI", "Zarife.AI\Zarife.AI.csproj", "{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -55,6 +57,18 @@ Global
 		{B767544E-1B45-474F-92F2-4ADA590981C0}.Release|x64.Build.0 = Release|Any CPU
 		{B767544E-1B45-474F-92F2-4ADA590981C0}.Release|x86.ActiveCfg = Release|Any CPU
 		{B767544E-1B45-474F-92F2-4ADA590981C0}.Release|x86.Build.0 = Release|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Debug|x64.ActiveCfg = Debug|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Debug|x64.Build.0 = Debug|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Debug|x86.ActiveCfg = Debug|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Debug|x86.Build.0 = Debug|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Release|Any CPU.Build.0 = Release|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Release|x64.ActiveCfg = Release|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Release|x64.Build.0 = Release|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Release|x86.ActiveCfg = Release|Any CPU
+		{8B366F0B-E0EA-4FDE-B416-2CB3049CFC54}.Release|x86.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

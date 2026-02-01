@@ -10,6 +10,7 @@ using Zarife.Core.Interfaces;
 using Zarife.Infrastructure.Data;
 using Zarife.Infrastructure.Identity;
 using Zarife.Infrastructure.Security;
+using Zarife.AI;
 using Zarife.Infrastructure.Services;
 
 var builder = WebApplication.CreateBuilder(args);
@@ -77,6 +78,9 @@ builder.Services.AddAuthentication(options =>
 // Services
 builder.Services.AddScoped<ITenantService, TenantService>();
 builder.Services.AddScoped<ITokenService, TokenService>();
+
+// AI Services
+builder.Services.AddZarifeAI();
 
 // Storage
 builder.Services.AddMinio(options =>

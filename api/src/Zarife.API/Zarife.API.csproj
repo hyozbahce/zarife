@@ -17,6 +17,7 @@
   </ItemGroup>
 
   <ItemGroup>
+    <ProjectReference Include="..\Zarife.AI\Zarife.AI.csproj" />
     <ProjectReference Include="..\Zarife.Core\Zarife.Core.csproj" />
     <ProjectReference Include="..\Zarife.Infrastructure\Zarife.Infrastructure.csproj" />
   </ItemGroup>

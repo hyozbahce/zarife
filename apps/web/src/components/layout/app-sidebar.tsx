@@ -60,6 +60,7 @@ const navMain: NavItem[] = [
     icon: Sparkles,
     roles: ["PlatformAdmin", "SchoolAdmin"],
     children: [
+      { title: "AI Story Generator", url: "/ai/generate" },
       { title: "Story Builder", url: "/stories/new" },
       { title: "Asset Library", url: "/assets" },
     ],
