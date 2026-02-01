@@ -11,7 +11,6 @@ using Zarife.Infrastructure.Data;
 using Zarife.Infrastructure.Identity;
 using Zarife.Infrastructure.Security;
 using Zarife.Infrastructure.Services;
-using Zarife.Infrastructure.Storage;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -87,7 +86,7 @@ builder.Services.AddMinio(options =>
            .WithSSL(false)
            .Build();
 });
-builder.Services.AddScoped<IStorageInitializer, MinioStorageInitializer>();
+builder.Services.AddScoped<IAppInitializer, AppInitializer>();
 
 // CORS
 builder.Services.AddCors(options =>
@@ -102,14 +101,20 @@ builder.Services.AddCors(options =>
 
 var app = builder.Build();
 
-// Initialize Storage
+// Initialize Infrastructure (Migrations, Buckets, etc.)
 using (var scope = app.Services.CreateScope())
 {
     var logger = scope.ServiceProvider.GetRequiredService<ILogger<Program>>();
-    logger.LogInformation("Starting storage initialization...");
-    var initializer = scope.ServiceProvider.GetRequiredService<IStorageInitializer>();
-    await initializer.InitializeBucketsAsync();
-    logger.LogInformation("Storage initialization completed.");
+    try 
+    {
+        var appInitializer = scope.ServiceProvider.GetRequiredService<IAppInitializer>();
+        await appInitializer.InitializeAsync();
+    }
+    catch (Exception ex)
+    {
+        logger.LogCritical(ex, "Infrastructure initialization failed!");
+        throw;
+    }
 }
 
 // Configure the HTTP request pipeline.

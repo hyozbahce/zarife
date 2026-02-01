@@ -21,12 +21,4 @@ public class SchoolsController : ControllerBase
     {
         return await _context.Schools.ToListAsync();
     }
-
-    [HttpPost]
-    public async Task<ActionResult<School>> CreateSchool(School school)
-    {
-        _context.Schools.Add(school);
-        await _context.SaveChangesAsync();
-        return CreatedAtAction(nameof(GetSchools), new { id = school.Id }, school);
-    }
 }
