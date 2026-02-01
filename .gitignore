@@ -60,3 +60,6 @@ blob-report/
 minio_data/
 postgres_data/
 redis_data/
+.env
+.env.local
+*.env.*

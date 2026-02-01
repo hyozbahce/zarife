@@ -1,6 +1,7 @@
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
+using Zarife.Core.DTOs.Account;
 using Zarife.Infrastructure.Identity;
 using Zarife.Infrastructure.Security;
 
@@ -8,69 +9,72 @@ namespace Zarife.API.Controllers;
 
 [ApiController]
 [Route("api/[controller]")]
-public class AccountController : ControllerBase
+public sealed class AccountController(
+    UserManager<ApplicationUser> userManager,
+    SignInManager<ApplicationUser> signInManager,
+    ITokenService tokenService,
+    ILogger<AccountController> logger) : ControllerBase
 {
-    private readonly UserManager<ApplicationUser> _userManager;
-    private readonly SignInManager<ApplicationUser> _signInManager;
-    private readonly ITokenService _tokenService;
-
-    public AccountController(
-        UserManager<ApplicationUser> userManager,
-        SignInManager<ApplicationUser> signInManager,
-        ITokenService tokenService)
-    {
-        _userManager = userManager;
-        _signInManager = signInManager;
-        _tokenService = tokenService;
-    }
-
     [HttpPost("login")]
-    public async Task<ActionResult<UserDto>> Login(LoginDto loginDto)
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<AuthResponse>> Login(LoginRequest request)
     {
-        var user = await _userManager.FindByEmailAsync(loginDto.Email);
-        if (user == null) return Unauthorized("Invalid email or password");
-
-        var result = await _signInManager.CheckPasswordSignInAsync(user, loginDto.Password, false);
-        if (!result.Succeeded) return Unauthorized("Invalid email or password");
-
-        return new UserDto
+        var user = await userManager.FindByEmailAsync(request.Email);
+        if (user == null)
         {
-            Email = user.Email!,
-            Token = _tokenService.CreateToken(user),
-            Role = user.Role ?? "user",
-            TenantId = user.TenantId
-        };
+            logger.LogWarning("Login failed for email: {Email} - User not found", request.Email);
+            return Unauthorized("Invalid email or password");
+        }
+
+        var result = await signInManager.CheckPasswordSignInAsync(user, request.Password, false);
+        if (!result.Succeeded)
+        {
+            logger.LogWarning("Login failed for email: {Email} - Invalid password", request.Email);
+            return Unauthorized("Invalid email or password");
+        }
+
+        logger.LogInformation("User {Email} logged in successfully", request.Email);
+        
+        return Ok(new AuthResponse(
+            user.Email!,
+            tokenService.CreateToken(user),
+            user.Role ?? "user",
+            user.TenantId
+        ));
     }
 
     [HttpPost("register")]
-    public async Task<ActionResult<UserDto>> Register(RegisterDto registerDto)
+    [ProducesResponseType(typeof(AuthResponse), StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    public async Task<ActionResult<AuthResponse>> Register(RegisterRequest request)
     {
-        if (await _userManager.Users.AnyAsync(x => x.Email == registerDto.Email))
+        if (await userManager.Users.AnyAsync(x => x.Email == request.Email))
         {
-            return BadRequest("Email is taken");
+            return BadRequest("Email is already in use");
         }
 
         var user = new ApplicationUser
         {
-            UserName = registerDto.Email,
-            Email = registerDto.Email,
-            Role = registerDto.Role,
-            TenantId = registerDto.TenantId
+            UserName = request.Email,
+            Email = request.Email,
+            Role = request.Role,
+            TenantId = request.TenantId
         };
 
-        var result = await _userManager.CreateAsync(user, registerDto.Password);
-        if (!result.Succeeded) return BadRequest(result.Errors);
-
-        return new UserDto
+        var result = await userManager.CreateAsync(user, request.Password);
+        if (!result.Succeeded)
         {
-            Email = user.Email,
-            Token = _tokenService.CreateToken(user),
-            Role = user.Role,
-            TenantId = user.TenantId
-        };
+            return BadRequest(result.Errors);
+        }
+
+        logger.LogInformation("New user registered: {Email}", request.Email);
+
+        return Ok(new AuthResponse(
+            user.Email!,
+            tokenService.CreateToken(user),
+            user.Role ?? "user",
+            user.TenantId
+        ));
     }
 }
-
-public record LoginDto(string Email, string Password);
-public record RegisterDto(string Email, string Password, string Role, Guid? TenantId);
-public record UserDto { public string Email { get; set; } = string.Empty; public string Token { get; set; } = string.Empty; public string Role { get; set; } = string.Empty; public Guid? TenantId { get; set; } }

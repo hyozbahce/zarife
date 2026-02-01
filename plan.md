@@ -40,128 +40,91 @@
 
 > **Kritik**: Tüm uygulama docker-compose ile tamamen local'de çalışabilir olmalıdır.
 
-### docker-compose.yml
+### docker-compose.yml (Actual implementation)
+
+The implementation uses a root `.env` file for all configurations and port ranges (`13000-13100`) to avoid conflicts with other local services.
 
 ```yaml
-version: '3.8'
-
 services:
-  # PostgreSQL Database
   postgres:
     image: postgres:16-alpine
     container_name: zarife-db
     environment:
-      POSTGRES_USER: zarife
-      POSTGRES_PASSWORD: zarife_dev_123
-      POSTGRES_DB: zarife
-    volumes:
-      - postgres_data:/var/lib/postgresql/data
-      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+      POSTGRES_USER: ${POSTGRES_USER}
+      POSTGRES_PASSWORD: ${POSTGRES_PASSWORD}
+      POSTGRES_DB: ${POSTGRES_DB}
     ports:
-      - "5432:5432"
+      - "${DB_PORT}:5432" # Default: 13001
     healthcheck:
-      test: ["CMD-SHELL", "pg_isready -U zarife"]
-      interval: 5s
-      timeout: 5s
-      retries: 5
+      test: ["CMD-SHELL", "pg_isready -U ${POSTGRES_USER}"]
+    networks:
+      - zarife-network
 
-  # Redis Cache
   redis:
     image: redis:7-alpine
     container_name: zarife-cache
     ports:
-      - "6379:6379"
-    volumes:
-      - redis_data:/data
+      - "${REDIS_PORT}:6379" # Default: 13002
+    networks:
+      - zarife-network
 
-  # MinIO (S3-Compatible Storage)
   minio:
     image: minio/minio:latest
     container_name: zarife-storage
     command: server /data --console-address ":9001"
     environment:
-      MINIO_ROOT_USER: zarife_minio
-      MINIO_ROOT_PASSWORD: zarife_minio_secret
-    volumes:
-      - minio_data:/data
+      MINIO_ROOT_USER: ${MINIO_ROOT_USER}
+      MINIO_ROOT_PASSWORD: ${MINIO_ROOT_PASSWORD}
     ports:
-      - "9000:9000"   # API
-      - "9001:9001"   # Console UI
+      - "${MINIO_API_PORT}:9000"     # Default: 13003
+      - "${MINIO_CONSOLE_PORT}:9001"   # Default: 13004
     healthcheck:
       test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
-      interval: 30s
-      timeout: 20s
-      retries: 3
+    networks:
+      - zarife-network
 
-  # MinIO Client (bucket initialization)
-  minio-init:
-    image: minio/mc:latest
-    depends_on:
-      minio:
-        condition: service_healthy
-    entrypoint: >
-      /bin/sh -c "
-      mc alias set zarife http://minio:9000 zarife_minio zarife_minio_secret;
-      mc mb zarife/books --ignore-existing;
-      mc mb zarife/animations --ignore-existing;
-      mc mb zarife/audio --ignore-existing;
-      mc mb zarife/avatars --ignore-existing;
-      mc anonymous set download zarife/books;
-      mc anonymous set download zarife/animations;
-      mc anonymous set download zarife/audio;
-      echo 'Buckets created successfully';
-      "
-
-  # .NET Core API
   api:
     build:
-      context: ./api
+      context: ./api/src
       dockerfile: Dockerfile
     container_name: zarife-api
     environment:
-      ASPNETCORE_ENVIRONMENT: Development
-      ConnectionStrings__DefaultConnection: "Host=postgres;Database=zarife;Username=zarife;Password=zarife_dev_123"
+      ASPNETCORE_ENVIRONMENT: ${ASPNETCORE_ENVIRONMENT}
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=${POSTGRES_DB};Username=${POSTGRES_USER};Password=${POSTGRES_PASSWORD}"
       ConnectionStrings__Redis: "redis:6379"
-      Storage__Endpoint: "http://minio:9000"
-      Storage__AccessKey: zarife_minio
-      Storage__SecretKey: zarife_minio_secret
-      Storage__UseSSL: "false"
+      Storage__Endpoint: "minio:9000"
+      Storage__AccessKey: ${MINIO_ROOT_USER}
+      Storage__SecretKey: ${MINIO_ROOT_PASSWORD}
+      Jwt__Issuer: ${JWT_ISSUER}
+      Jwt__Audience: ${JWT_AUDIENCE}
+      Jwt__Secret: ${JWT_SECRET}
     ports:
-      - "5000:8080"
-    depends_on:
-      postgres:
-        condition: service_healthy
-      redis:
-        condition: service_started
-      minio:
-        condition: service_healthy
-    volumes:
-      - ./api:/app
-      - /app/bin
-      - /app/obj
+      - "${API_PORT}:8080" # Default: 13005
+    networks:
+      - zarife-network
 
-  # Vite + React Web App (development mode)
   web:
     build:
       context: ./apps/web
       dockerfile: Dockerfile.dev
     container_name: zarife-web
     environment:
-      VITE_API_URL: http://localhost:5000
-      VITE_STORAGE_URL: http://localhost:9000
+      VITE_API_URL: http://${APP_DOMAIN}:${API_PORT}
+      VITE_STORAGE_URL: http://${APP_DOMAIN}:${MINIO_API_PORT}
     ports:
-      - "3000:3000"
-    depends_on:
-      - api
+      - "${WEB_PORT}:5173" # Default: 13000
     volumes:
       - ./apps/web:/app
-      - /app/node_modules
-      - /app/.next
+      - web_node_modules:/app/node_modules
+    networks:
+      - zarife-network
 
 volumes:
   postgres_data:
   redis_data:
   minio_data:
+  web_node_modules:
+```
 ```
 
 ### Environment Configuration
@@ -209,30 +172,32 @@ open http://localhost:9001
 psql -h localhost -U zarife -d zarife
 ```
 
-### .env.example
+### Centralized .env configuration
+
+All sensitive data and service configurations are stored in the root `.env` file.
 
 ```bash
 # Database
-DATABASE_URL=postgresql://zarife:zarife_dev_123@localhost:5432/zarife
-
-# Redis
-REDIS_URL=redis://localhost:6379
+POSTGRES_USER=zarife
+POSTGRES_PASSWORD=zarife_dev_123
+POSTGRES_DB=zarife
+DB_PORT=13001
 
 # Storage (MinIO)
-STORAGE_ENDPOINT=http://localhost:9000
-STORAGE_ACCESS_KEY=zarife_minio
-STORAGE_SECRET_KEY=zarife_minio_secret
-STORAGE_BUCKET_BOOKS=books
-STORAGE_BUCKET_ANIMATIONS=animations
-STORAGE_BUCKET_AUDIO=audio
+MINIO_ROOT_USER=zarife_minio
+MINIO_ROOT_PASSWORD=zarife_minio_secret
+MINIO_API_PORT=13003
+MINIO_CONSOLE_PORT=13004
 
 # API
-API_URL=http://localhost:5000
+API_PORT=13005
+WEB_PORT=13000
+APP_DOMAIN=localhost
 
 # JWT
-JWT_SECRET=your-super-secret-jwt-key-minimum-32-chars
 JWT_ISSUER=zarife-api
-JWT_AUDIENCE=zarife-clients
+JWT_AUDIENCE=zarife-client
+JWT_SECRET=your-super-secret-jwt-key-minimum-32-chars-for-development
 ```
 
 ---
@@ -527,29 +492,29 @@ zarife/
 
 ## 🎯 Phase 1: Foundation (Weeks 1-8)
 
-### 1.1 Project Setup (Week 1-2)
+### 1.1 Project Setup (Week 1-2) ⮕ ✅ COMPLETED
 
-| Task | Details | Owner |
-|------|---------|-------|
-| Repository setup | Git, branching strategy, PR templates | Dev |
-| **docker-compose.yml** | Postgres, Redis, MinIO, API, Web | Dev |
-| .NET Core solution | Clean Architecture scaffold | Dev |
-| Vite + React web app | shadcn/ui, Tailwind, React Router | Dev |
-| Database design | PostgreSQL schema, migrations | Dev |
-| Storage abstraction | S3-compatible interface (MinIO/Azure) | Dev |
-| CI/CD pipeline | GitHub Actions for build/test | Dev |
+| Task | Details | Status |
+|------|---------|--------|
+| Repository setup | Git, branching strategy, PR templates | ✅ |
+| **docker-compose.yml**| Optimized with ports 13000+, named volumes, .env | ✅ |
+| .NET Core solution | Clean Architecture with .NET 9 | ✅ |
+| Vite + React web app | Tailwind v4, shadcn/ui (v4 arch), Router | ✅ |
+| Database design | PostgreSQL with multi-tenancy filters | ✅ |
+| Storage abstraction | Application-level MinIO initialization | ✅ |
+| Base Layout | DashboardLayout + AppSidebar (premium UI) | ✅ |
 
-### 1.2 Authentication & Multi-Tenancy (Week 3-4)
+### 1.2 Authentication & Multi-Tenancy (Week 3-4) ⮕ 🏗️ IN PROGRESS
 
 | Task | Details | Priority |
 |------|---------|----------|
-| Tenant (School) model | schools table with settings | 🔴 High |
-| User registration/login | Email + password with tenant context | 🔴 High |
-| Role system | Student, Teacher, Parent, SchoolAdmin, PlatformAdmin | 🔴 High |
-| JWT with tenant claims | tenant_id, role, permissions | 🔴 High |
-| Refresh tokens | Secure rotation | 🔴 High |
+| Tenant (School) model | schools table with settings | ✅ Done |
+| User registration/login | AccountController refined with Result pattern | ✅ Done |
+| Role system | Student, Teacher, Parent, SchoolAdmin, PlatformAdmin | ✅ Done |
+| JWT with tenant claims | tenant_id, role, permissions | ✅ Done |
+| Frontend Auth Flow | Login/Register pages + Auth Context | 🏗️ Next |
 | Student simplified login | School code + username | 🔴 High |
-| Tenant middleware | Extract & validate tenant context | 🔴 High |
+| Tenant middleware | Extract & validate tenant context | ✅ Done |
 | PostgreSQL RLS | Row-level security policies | 🟡 Medium |
 | Password reset | Email flow | 🟡 Medium |
 | Social login | Google (optional, prep for Keycloak) | 🟢 Low |
