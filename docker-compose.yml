@@ -1,0 +1,133 @@
+version: '3.8'
+
+services:
+  # PostgreSQL Database
+  postgres:
+    image: postgres:16-alpine
+    container_name: zarife-db
+    environment:
+      POSTGRES_USER: zarife
+      POSTGRES_PASSWORD: zarife_dev_123
+      POSTGRES_DB: zarife
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init-db.sql:/docker-entrypoint-initdb.d/init.sql
+    ports:
+      - "5432:5432"
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U zarife"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    networks:
+      - zarife-network
+
+  # Redis Cache
+  redis:
+    image: redis:7-alpine
+    container_name: zarife-cache
+    ports:
+      - "6379:6379"
+    volumes:
+      - redis_data:/data
+    networks:
+      - zarife-network
+
+  # MinIO (S3-Compatible Storage)
+  minio:
+    image: minio/minio:latest
+    container_name: zarife-storage
+    command: server /data --console-address ":9001"
+    environment:
+      MINIO_ROOT_USER: zarife_minio
+      MINIO_ROOT_PASSWORD: zarife_minio_secret
+    volumes:
+      - minio_data:/data
+    ports:
+      - "9000:9000"   # API
+      - "9001:9001"   # Console UI
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      interval: 30s
+      timeout: 20s
+      retries: 3
+    networks:
+      - zarife-network
+
+  # MinIO Client (bucket initialization)
+  minio-init:
+    image: minio/mc:latest
+    depends_on:
+      minio:
+        condition: service_healthy
+    networks:
+      - zarife-network
+    entrypoint: >
+      /bin/sh -c "
+      until curl -sf http://minio:9000/minio/health/live; do echo 'Waiting for MinIO...'; sleep 1; done;
+      mc alias set zarife http://minio:9000 zarife_minio zarife_minio_secret;
+      mc mb zarife/books --ignore-existing;
+      mc mb zarife/animations --ignore-existing;
+      mc mb zarife/audio --ignore-existing;
+      mc mb zarife/avatars --ignore-existing;
+      mc anonymous set download zarife/books;
+      mc anonymous set download zarife/animations;
+      mc anonymous set download zarife/audio;
+      echo 'Buckets created successfully';
+      "
+
+  # .NET Core API
+  api:
+    build:
+      context: ./api/src
+      dockerfile: Dockerfile
+    container_name: zarife-api
+    environment:
+      ASPNETCORE_ENVIRONMENT: Development
+      ConnectionStrings__DefaultConnection: "Host=postgres;Database=zarife;Username=zarife;Password=zarife_dev_123"
+      ConnectionStrings__Redis: "redis:6379"
+      Storage__Endpoint: "http://minio:9000"
+      Storage__AccessKey: zarife_minio
+      Storage__SecretKey: zarife_minio_secret
+      Storage__UseSSL: "false"
+    ports:
+      - "5000:8080"
+    depends_on:
+      postgres:
+        condition: service_healthy
+      redis:
+        condition: service_started
+      minio:
+        condition: service_healthy
+#    volumes:
+#      - ./api/src:/app
+    networks:
+      - zarife-network
+
+  # Vite + React Web App
+  web:
+    build:
+      context: ./apps/web
+      dockerfile: Dockerfile.dev
+    container_name: zarife-web
+    environment:
+      VITE_API_URL: http://localhost:5000
+      VITE_STORAGE_URL: http://localhost:9000
+    ports:
+      - "3000:5173"
+    depends_on:
+      - api
+    volumes:
+      - ./apps/web:/app
+      - /app/node_modules
+    networks:
+      - zarife-network
+
+volumes:
+  postgres_data:
+  redis_data:
+  minio_data:
+
+networks:
+  zarife-network:
+    driver: bridge
