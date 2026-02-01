@@ -1,4 +1,5 @@
-import { createContext, useContext, useEffect, useState, type ReactNode } from 'react';
+/* eslint-disable react-refresh/only-export-components */
+import { createContext, useContext, useState, type ReactNode } from 'react';
 import type { User, AuthState, AuthResponse } from '../types/auth';
 
 interface AuthContextType extends AuthState {
@@ -9,29 +10,30 @@ interface AuthContextType extends AuthState {
 const AuthContext = createContext<AuthContextType | undefined>(undefined);
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [state, setState] = useState<AuthState>({
-    user: null,
-    token: null,
-    isAuthenticated: false,
-    isLoading: true,
-  });
+  const [state, setState] = useState<AuthState>(() => {
+    try {
+      const savedToken = localStorage.getItem('token');
+      const savedUser = localStorage.getItem('user');
 
-  useEffect(() => {
-    // Initial load from localStorage
-    const savedToken = localStorage.getItem('token');
-    const savedUser = localStorage.getItem('user');
-
-    if (savedToken && savedUser) {
-      setState({
-        user: JSON.parse(savedUser),
-        token: savedToken,
-        isAuthenticated: true,
-        isLoading: false,
-      });
-    } else {
-      setState((prev) => ({ ...prev, isLoading: false }));
+      if (savedToken && savedUser) {
+        return {
+          user: JSON.parse(savedUser) as User,
+          token: savedToken,
+          isAuthenticated: true,
+          isLoading: false,
+        };
+      }
+    } catch {
+      // Ignore storage errors and fall back to defaults.
     }
-  }, []);
+
+    return {
+      user: null,
+      token: null,
+      isAuthenticated: false,
+      isLoading: false,
+    };
+  });
 
   const login = (response: AuthResponse) => {
     const user: User = {

@@ -5,15 +5,34 @@ export function cn(...inputs: ClassValue[]) {
   return twMerge(clsx(inputs))
 }
 
-export function getErrorMessage(error: any): string {
+export function getErrorMessage(error: unknown): string {
   if (typeof error === 'string') return error;
-  
+
+  if (error && typeof error === 'object' && 'response' in error) {
+    const response = (error as { response?: { data?: unknown } }).response;
+    if (response?.data) {
+      return getErrorMessage(response.data);
+    }
+  }
+
   if (Array.isArray(error)) {
-    return error.map(e => e.description || e.message || JSON.stringify(e)).join(', ');
+    return error
+      .map((item) => {
+        if (item && typeof item === 'object') {
+          const record = item as { description?: unknown; message?: unknown };
+          if (typeof record.description === 'string') return record.description;
+          if (typeof record.message === 'string') return record.message;
+        }
+        return JSON.stringify(item);
+      })
+      .join(', ');
   }
   
-  if (error?.description) return error.description;
-  if (error?.message) return error.message;
+  if (error && typeof error === 'object') {
+    const record = error as { description?: unknown; message?: unknown };
+    if (typeof record.description === 'string') return record.description;
+    if (typeof record.message === 'string') return record.message;
+  }
   
   return 'An unexpected error occurred';
 }

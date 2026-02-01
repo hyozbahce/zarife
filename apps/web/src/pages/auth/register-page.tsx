@@ -8,6 +8,7 @@ import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BookOpen, AlertCircle, Loader2 } from 'lucide-react';
+import { getErrorMessage } from '@/lib/utils';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -33,8 +34,8 @@ export default function RegisterPage() {
       const response = await api.post('/api/account/register', { email, password });
       login(response.data);
       navigate('/');
-    } catch (err: any) {
-      setError(err.response?.data || 'Failed to create account');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to create account');
     } finally {
       setIsLoading(false);
     }

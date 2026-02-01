@@ -42,8 +42,8 @@ export function CreateSchoolModal({ isOpen, onClose, onSuccess }: CreateSchoolMo
       onSuccess();
       onClose();
       resetForm();
-    } catch (err: any) {
-      setError(getErrorMessage(err.response?.data) || 'Failed to create school. Check if email is already in use.');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Failed to create school. Check if email is already in use.');
     } finally {
       setIsLoading(false);
     }

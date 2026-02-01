@@ -1,3 +1,4 @@
+/* eslint-disable react-refresh/only-export-components */
 import { createContext, useContext, useEffect, useState, type ReactNode } from 'react'
 
 type Theme = 'dark' | 'light' | 'system'
@@ -31,7 +32,7 @@ export function ThemeProvider({
       return (localStorage.getItem(storageKey) as Theme) ||
              (sessionStorage.getItem(storageKey) as Theme) ||
              defaultTheme
-    } catch (e) {
+    } catch {
       return defaultTheme
     }
   })
@@ -59,10 +60,10 @@ export function ThemeProvider({
     setTheme: (theme: Theme) => {
       try {
         localStorage.setItem(storageKey, theme)
-      } catch (e) {
+      } catch {
         try {
           sessionStorage.setItem(storageKey, theme)
-        } catch (err) {
+        } catch {
           console.warn('Storage unavailable, theme preference will not persist')
         }
       }

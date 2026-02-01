@@ -1,9 +1,9 @@
 import { BrowserRouter, Routes, Route, Navigate } from "react-router-dom"
 import { DashboardLayout } from "@/components/layout/dashboard-layout"
-import { Button } from "@/components/ui/button"
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import LoginPage from "@/pages/auth/login-page"
 import SchoolsPage from "@/pages/management/schools-page"
+import DashboardPage from "@/pages/dashboard"
+import SettingsPage from "@/pages/settings-page"
 import { useAuth } from "@/contexts/auth-context"
 import { Loader2 } from "lucide-react"
 
@@ -27,37 +27,6 @@ function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode,
   }
 
   return <>{children}</>;
-}
-
-function DashboardPage() {
-  return (
-    <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard</h2>
-        <div className="flex items-center gap-2">
-          <Button>Download Report</Button>
-        </div>
-      </div>
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        {[
-          { title: "Total Schools", value: "24", sub: "+2 from last month" },
-          { title: "Active Students", value: "1,234", sub: "+12% from last month" },
-          { title: "Books Created", value: "86", sub: "+5 this week" },
-          { title: "AI Generations", value: "3,456", sub: "Premium account active" },
-        ].map((stat) => (
-          <Card key={stat.title}>
-            <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-              <CardTitle className="text-sm font-medium">{stat.title}</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <div className="text-2xl font-bold">{stat.value}</div>
-              <p className="text-xs text-muted-foreground">{stat.sub}</p>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
-    </div>
-  )
 }
 
 function App() {
@@ -85,6 +54,17 @@ function App() {
             <ProtectedRoute requiredRole="PlatformAdmin">
               <DashboardLayout>
                 <SchoolsPage />
+              </DashboardLayout>
+            </ProtectedRoute>
+          }
+        />
+
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <DashboardLayout>
+                <SettingsPage />
               </DashboardLayout>
             </ProtectedRoute>
           }

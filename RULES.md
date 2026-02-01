@@ -8,12 +8,18 @@
 - Always respond in English, even if the user writes in another language
 - Ask before making large-scale changes
 - Prefer editing existing files over creating new ones
+- Always assume we are working in a Docker environment with containers for everything, and tailor suggestions accordingly
 
 ## Git Rules
 
 - Never run `git commit` yourself
 - Never run `git push` yourself
 - Only stage files or show diffs when asked
+
+## Skills Rules
+
+- Never install a skill with the `-y` or `-g` parameters
+- Only install skills for these agents: Antigravity, Claude Code, Codex, OpenCode
 
 ## Session Startup
 

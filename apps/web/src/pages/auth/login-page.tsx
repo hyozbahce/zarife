@@ -28,8 +28,8 @@ export default function LoginPage() {
       const response = await api.post('/api/account/login', { email, password });
       login(response.data);
       navigate('/');
-    } catch (err: any) {
-      setError(getErrorMessage(err.response?.data) || 'Invalid email or password');
+    } catch (err: unknown) {
+      setError(getErrorMessage(err) || 'Invalid email or password');
     } finally {
       setIsLoading(false);
     }
