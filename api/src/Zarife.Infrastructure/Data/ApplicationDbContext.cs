@@ -20,6 +20,13 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
     }
 
     public DbSet<School> Schools => Set<School>();
+    public DbSet<Class> Classes => Set<Class>();
+    public DbSet<Book> Books => Set<Book>();
+    public DbSet<BookPage> BookPages => Set<BookPage>();
+    public DbSet<BookAssignment> BookAssignments => Set<BookAssignment>();
+    public DbSet<ReadingProgress> ReadingProgress => Set<ReadingProgress>();
+    public DbSet<MediaAsset> MediaAssets => Set<MediaAsset>();
+    public DbSet<StudentProfile> StudentProfiles => Set<StudentProfile>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -46,6 +53,81 @@ public class ApplicationDbContext : IdentityDbContext<ApplicationUser, IdentityR
         modelBuilder.Entity<ApplicationUser>()
             .HasIndex(u => new { u.TenantId, u.Email })
             .IsUnique();
+
+        // Class configuration
+        modelBuilder.Entity<Class>(entity =>
+        {
+            entity.HasIndex(c => new { c.TenantId, c.Name });
+            entity.HasOne(c => c.School)
+                .WithMany()
+                .HasForeignKey(c => c.TenantId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasQueryFilter(c => !_tenantService.TenantId.HasValue || c.TenantId == _tenantService.TenantId);
+        });
+
+        // Book configuration
+        modelBuilder.Entity<Book>(entity =>
+        {
+            entity.HasIndex(b => b.Status);
+            entity.HasIndex(b => b.Title);
+        });
+
+        // BookPage configuration
+        modelBuilder.Entity<BookPage>(entity =>
+        {
+            entity.HasIndex(bp => new { bp.BookId, bp.PageNumber }).IsUnique();
+            entity.HasOne(bp => bp.Book)
+                .WithMany(b => b.Pages)
+                .HasForeignKey(bp => bp.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+        });
+
+        // BookAssignment configuration
+        modelBuilder.Entity<BookAssignment>(entity =>
+        {
+            entity.HasIndex(ba => ba.TenantId);
+            entity.HasOne(ba => ba.Book)
+                .WithMany(b => b.Assignments)
+                .HasForeignKey(ba => ba.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasOne(ba => ba.Class)
+                .WithMany()
+                .HasForeignKey(ba => ba.ClassId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasQueryFilter(ba => !_tenantService.TenantId.HasValue || ba.TenantId == _tenantService.TenantId);
+        });
+
+        // ReadingProgress configuration
+        modelBuilder.Entity<ReadingProgress>(entity =>
+        {
+            entity.HasIndex(rp => new { rp.UserId, rp.BookId }).IsUnique();
+            entity.HasIndex(rp => rp.TenantId);
+            entity.HasOne(rp => rp.Book)
+                .WithMany()
+                .HasForeignKey(rp => rp.BookId)
+                .OnDelete(DeleteBehavior.Cascade);
+            entity.HasQueryFilter(rp => !_tenantService.TenantId.HasValue || rp.TenantId == _tenantService.TenantId);
+        });
+
+        // MediaAsset configuration
+        modelBuilder.Entity<MediaAsset>(entity =>
+        {
+            entity.HasIndex(ma => ma.AssetType);
+            entity.HasIndex(ma => new { ma.BucketName, ma.ObjectKey }).IsUnique();
+        });
+
+        // StudentProfile configuration
+        modelBuilder.Entity<StudentProfile>(entity =>
+        {
+            entity.HasIndex(sp => sp.UserId).IsUnique();
+            entity.HasIndex(sp => sp.TenantId);
+            entity.HasIndex(sp => sp.SchoolCode);
+            entity.HasOne(sp => sp.Class)
+                .WithMany()
+                .HasForeignKey(sp => sp.ClassId)
+                .OnDelete(DeleteBehavior.SetNull);
+            entity.HasQueryFilter(sp => !_tenantService.TenantId.HasValue || sp.TenantId == _tenantService.TenantId);
+        });
     }
 
     public override Task<int> SaveChangesAsync(CancellationToken cancellationToken = default)
