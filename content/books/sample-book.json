@@ -1,0 +1,106 @@
+{
+  "bookId": "sample-001",
+  "metadata": {
+    "title": "Kirmizi Balik",
+    "author": "Zarife Team",
+    "illustrator": "Partner Name",
+    "language": "tr",
+    "targetAge": { "min": 3, "max": 6 },
+    "duration": 5,
+    "categories": ["story", "shapes", "colors"]
+  },
+  "pages": [
+    {
+      "pageNumber": 1,
+      "riveFile": "page1.riv",
+      "stateMachine": "PageController",
+      "artboard": "Page1",
+      "inputs": [
+        {
+          "name": "isNarrating",
+          "type": "boolean",
+          "default": false
+        }
+      ],
+      "triggers": [
+        {
+          "name": "fishTapped",
+          "type": "trigger"
+        },
+        {
+          "name": "pageComplete",
+          "type": "trigger"
+        }
+      ],
+      "narration": {
+        "audioUrl": "page1.mp3",
+        "text": "Bir varmis bir yokmis, denizin dibinde kirmizi bir balik yasamis.",
+        "wordTimings": [
+          { "word": "Bir", "start": 0.0, "end": 0.3 },
+          { "word": "varmis", "start": 0.3, "end": 0.7 },
+          { "word": "bir", "start": 0.7, "end": 0.9 },
+          { "word": "yokmis", "start": 0.9, "end": 1.3 },
+          { "word": "denizin", "start": 1.5, "end": 2.0 },
+          { "word": "dibinde", "start": 2.0, "end": 2.5 },
+          { "word": "kirmizi", "start": 2.5, "end": 3.0 },
+          { "word": "bir", "start": 3.0, "end": 3.2 },
+          { "word": "balik", "start": 3.2, "end": 3.6 },
+          { "word": "yasamis", "start": 3.6, "end": 4.1 }
+        ],
+        "onStart": { "input": "isNarrating", "value": true },
+        "onEnd": { "trigger": "pageComplete" }
+      }
+    },
+    {
+      "pageNumber": 2,
+      "riveFile": "page2.riv",
+      "stateMachine": "PageController",
+      "artboard": "Page2",
+      "inputs": [
+        {
+          "name": "isNarrating",
+          "type": "boolean",
+          "default": false
+        }
+      ],
+      "triggers": [],
+      "narration": {
+        "audioUrl": "page2.mp3",
+        "text": "Bu balik her gun denizde yuzmeyi cok severdi.",
+        "wordTimings": [
+          { "word": "Bu", "start": 0.0, "end": 0.2 },
+          { "word": "balik", "start": 0.2, "end": 0.6 },
+          { "word": "her", "start": 0.6, "end": 0.8 },
+          { "word": "gun", "start": 0.8, "end": 1.1 },
+          { "word": "denizde", "start": 1.1, "end": 1.6 },
+          { "word": "yuzmeyi", "start": 1.6, "end": 2.1 },
+          { "word": "cok", "start": 2.1, "end": 2.4 },
+          { "word": "severdi", "start": 2.4, "end": 2.9 }
+        ],
+        "onStart": { "input": "isNarrating", "value": true },
+        "onEnd": { "trigger": "pageComplete" }
+      }
+    },
+    {
+      "pageNumber": 3,
+      "riveFile": "page3.riv",
+      "stateMachine": "PageController",
+      "artboard": "Page3",
+      "inputs": [
+        {
+          "name": "isNarrating",
+          "type": "boolean",
+          "default": false
+        }
+      ],
+      "triggers": [],
+      "narration": {
+        "audioUrl": "page3.mp3",
+        "text": "Bir gun, baska baliklerla tanisti ve birlikte oynamaya basladilar.",
+        "wordTimings": [],
+        "onStart": { "input": "isNarrating", "value": true },
+        "onEnd": { "trigger": "pageComplete" }
+      }
+    }
+  ]
+}

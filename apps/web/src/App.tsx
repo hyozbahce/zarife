@@ -13,6 +13,7 @@ import MediaLibraryPage from "@/pages/content/media-library-page"
 import ClassesPage from "@/pages/school/classes-page"
 import StudentsPage from "@/pages/school/students-page"
 import AnalyticsPage from "@/pages/analytics/analytics-page"
+import ReaderPage from "@/pages/reader/reader-page"
 import { useAuth } from "@/contexts/auth-context"
 import { Loader2 } from "lucide-react"
 
@@ -62,6 +63,7 @@ function App() {
         {/* Library */}
         <Route path="/library" element={<DashboardRoute><LibraryPage /></DashboardRoute>} />
         <Route path="/library/:id" element={<DashboardRoute><BookDetailPage /></DashboardRoute>} />
+        <Route path="/reader/:id" element={<ProtectedRoute><ReaderPage /></ProtectedRoute>} />
 
         {/* Content Lab */}
         <Route path="/stories/new" element={<DashboardRoute requiredRole="PlatformAdmin"><BookEditorPage /></DashboardRoute>} />

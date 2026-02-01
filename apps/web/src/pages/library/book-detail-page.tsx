@@ -5,7 +5,7 @@ import type { BookDetail } from '@/types/books';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
-import { BookOpen, ArrowLeft, Edit, Trash2, Clock, Users, Globe } from 'lucide-react';
+import { BookOpen, ArrowLeft, Edit, Trash2, Clock, Users, Globe, Play } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
 
 export default function BookDetailPage() {
@@ -71,6 +71,11 @@ export default function BookDetailPage() {
           {book.author && <p className="text-muted-foreground">by {book.author}</p>}
         </div>
         <Badge variant="secondary" className="text-sm">{book.status}</Badge>
+        {book.pages.length > 0 && (
+          <Button onClick={() => navigate(`/reader/${book.id}`)}>
+            <Play className="mr-2 h-4 w-4" /> Read Book
+          </Button>
+        )}
         {isAdmin && (
           <div className="flex gap-2">
             {book.status !== 'Published' && (
