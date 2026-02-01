@@ -1,5 +1,5 @@
 import { type ReactNode } from "react"
-import { Monitor, Moon, Sun } from "lucide-react"
+import { Monitor, Moon, Sun, Languages } from "lucide-react"
 
 import { Button } from "@/components/ui/button"
 import {
@@ -10,52 +10,62 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { useTheme } from "@/components/theme-provider"
+import { useTranslation } from "react-i18next"
 
 type ThemeOption = "light" | "dark" | "system"
 
-const themeOptions: Array<{
-  value: ThemeOption
-  title: string
-  description: string
-  icon: ReactNode
-}> = [
-  {
-    value: "light",
-    title: "Light",
-    description: "Bright and calm, great for daytime use.",
-    icon: <Sun className="size-4" />,
-  },
-  {
-    value: "dark",
-    title: "Dark",
-    description: "Gentle on the eyes for evening reading.",
-    icon: <Moon className="size-4" />,
-  },
-  {
-    value: "system",
-    title: "Default",
-    description: "Match your device appearance automatically.",
-    icon: <Monitor className="size-4" />,
-  },
-]
-
 export default function SettingsPage() {
   const { theme, setTheme } = useTheme()
+  const { t, i18n } = useTranslation()
+
+  const themeOptions: Array<{
+    value: ThemeOption
+    titleKey: string
+    descKey: string
+    icon: ReactNode
+  }> = [
+    {
+      value: "light",
+      titleKey: "settings.theme.light",
+      descKey: "settings.theme.lightDesc",
+      icon: <Sun className="size-4" />,
+    },
+    {
+      value: "dark",
+      titleKey: "settings.theme.dark",
+      descKey: "settings.theme.darkDesc",
+      icon: <Moon className="size-4" />,
+    },
+    {
+      value: "system",
+      titleKey: "settings.theme.system",
+      descKey: "settings.theme.systemDesc",
+      icon: <Monitor className="size-4" />,
+    },
+  ]
+
+  const languageOptions: Array<{
+    value: string
+    label: string
+  }> = [
+    { value: "en", label: t('settings.language.en') },
+    { value: "tr", label: t('settings.language.tr') },
+  ]
 
   return (
     <div className="space-y-6 p-6">
       <div>
-        <h1 className="text-2xl font-semibold">Settings</h1>
+        <h1 className="text-2xl font-semibold">{t('settings.title')}</h1>
         <p className="text-sm text-muted-foreground">
-          Personalize your experience across Zarife.
+          {t('settings.description')}
         </p>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Theme</CardTitle>
+          <CardTitle>{t('settings.theme.title')}</CardTitle>
           <CardDescription>
-            Choose a light or dark appearance, or follow your device settings.
+            {t('settings.theme.description')}
           </CardDescription>
         </CardHeader>
         <CardContent className="flex flex-col gap-3 sm:flex-row">
@@ -74,11 +84,41 @@ export default function SettingsPage() {
                 </span>
                 <span className="space-y-1">
                   <span className="block text-sm font-semibold text-foreground">
-                    {option.title}
+                    {t(option.titleKey)}
                   </span>
                   <span className="block text-xs text-muted-foreground">
-                    {option.description}
+                    {t(option.descKey)}
                   </span>
+                </span>
+              </Button>
+            )
+          })}
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="flex items-center gap-2">
+            <Languages className="size-5" />
+            {t('settings.language.title')}
+          </CardTitle>
+          <CardDescription>
+            {t('settings.language.description')}
+          </CardDescription>
+        </CardHeader>
+        <CardContent className="flex flex-col gap-3 sm:flex-row">
+          {languageOptions.map((option) => {
+            const isActive = i18n.language === option.value
+            return (
+              <Button
+                key={option.value}
+                type="button"
+                variant={isActive ? "secondary" : "outline"}
+                className="h-auto flex-1 items-center justify-center gap-2 px-4 py-3"
+                onClick={() => i18n.changeLanguage(option.value)}
+              >
+                <span className="text-sm font-semibold text-foreground">
+                  {option.label}
                 </span>
               </Button>
             )

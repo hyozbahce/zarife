@@ -5,6 +5,7 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, GripVertical, Plus, Trash2 } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface CurriculumItem {
   order: number;
@@ -15,6 +16,7 @@ export default function CurriculumPage() {
   const [books, setBooks] = useState<Book[]>([]);
   const [curriculum, setCurriculum] = useState<CurriculumItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadBooks();
@@ -55,7 +57,7 @@ export default function CurriculumPage() {
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Curriculum Builder</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('school.curriculum.title')}</h2>
       </div>
 
       <div className="grid gap-6 lg:grid-cols-2">
@@ -63,9 +65,9 @@ export default function CurriculumPage() {
         <Card>
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
-              <BookOpen className="h-5 w-5" /> Available Books
+              <BookOpen className="h-5 w-5" /> {t('school.curriculum.availableBooks')}
             </CardTitle>
-            <CardDescription>Published books you can add to the reading sequence.</CardDescription>
+            <CardDescription>{t('school.curriculum.availableBooksDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             {isLoading ? (
@@ -73,7 +75,7 @@ export default function CurriculumPage() {
                 <div className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full" />
               </div>
             ) : books.length === 0 ? (
-              <p className="text-sm text-muted-foreground py-4 text-center">No published books available.</p>
+              <p className="text-sm text-muted-foreground py-4 text-center">{t('school.curriculum.noPublishedBooks')}</p>
             ) : (
               <div className="space-y-2">
                 {books.map(book => (
@@ -81,7 +83,7 @@ export default function CurriculumPage() {
                     <div className="flex-1">
                       <p className="font-medium text-sm">{book.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {book.durationMinutes}m | Ages {book.targetAgeMin}-{book.targetAgeMax}
+                        {book.durationMinutes}m | {t('library.ages', { min: book.targetAgeMin, max: book.targetAgeMax })}
                       </p>
                     </div>
                     <Button
@@ -90,7 +92,7 @@ export default function CurriculumPage() {
                       onClick={() => addToCurriculum(book)}
                       disabled={curriculum.some(c => c.book.id === book.id)}
                     >
-                      <Plus className="h-3 w-3 mr-1" /> Add
+                      <Plus className="h-3 w-3 mr-1" /> {t('school.curriculum.add')}
                     </Button>
                   </div>
                 ))}
@@ -102,13 +104,13 @@ export default function CurriculumPage() {
         {/* Curriculum Sequence */}
         <Card>
           <CardHeader>
-            <CardTitle>Reading Sequence</CardTitle>
-            <CardDescription>Drag to reorder. Students will read in this sequence.</CardDescription>
+            <CardTitle>{t('school.curriculum.readingSequence')}</CardTitle>
+            <CardDescription>{t('school.curriculum.readingSequenceDesc')}</CardDescription>
           </CardHeader>
           <CardContent>
             {curriculum.length === 0 ? (
               <p className="text-sm text-muted-foreground py-8 text-center">
-                Add books from the left to build your curriculum.
+                {t('school.curriculum.emptySequence')}
               </p>
             ) : (
               <div className="space-y-2">
@@ -136,7 +138,7 @@ export default function CurriculumPage() {
                     <div className="flex-1">
                       <p className="font-medium text-sm">{item.book.title}</p>
                       <p className="text-xs text-muted-foreground">
-                        {item.book.durationMinutes}m | {item.book.pageCount} pages
+                        {item.book.durationMinutes}m | {t('school.curriculum.pages', { count: item.book.pageCount })}
                       </p>
                     </div>
                     <Button

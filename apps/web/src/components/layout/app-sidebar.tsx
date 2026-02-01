@@ -11,10 +11,12 @@ import {
   LogOut,
   BarChart3,
   School,
+  Languages,
 } from "lucide-react"
 
 import { useAuth } from "@/contexts/auth-context"
 import { useNavigate, Link, useLocation } from "react-router-dom"
+import { useTranslation } from "react-i18next"
 
 import {
   Sidebar,
@@ -39,94 +41,101 @@ import {
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar"
+import { Button } from "@/components/ui/button"
 
 interface NavItem {
-  title: string;
+  titleKey: string;
   url: string;
   icon: React.ComponentType<{ className?: string }>;
   roles?: string[];
-  children?: { title: string; url: string }[];
+  children?: { titleKey: string; url: string }[];
 }
-
-const navMain: NavItem[] = [
-  {
-    title: "Dashboard",
-    url: "/dashboard",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "Content Lab",
-    url: "#",
-    icon: Sparkles,
-    roles: ["PlatformAdmin", "SchoolAdmin"],
-    children: [
-      { title: "AI Story Generator", url: "/ai/generate" },
-      { title: "Story Builder", url: "/stories/new" },
-      { title: "Asset Library", url: "/assets" },
-    ],
-  },
-  {
-    title: "Library",
-    url: "/library",
-    icon: Library,
-  },
-  {
-    title: "Analytics",
-    url: "/analytics",
-    icon: BarChart3,
-    roles: ["PlatformAdmin", "SchoolAdmin", "Teacher"],
-  },
-]
-
-const schoolNav: NavItem[] = [
-  {
-    title: "Teacher Hub",
-    url: "/school/teacher",
-    icon: GraduationCap,
-    roles: ["Teacher", "SchoolAdmin"],
-  },
-  {
-    title: "Classes",
-    url: "/school/classes",
-    icon: GraduationCap,
-    roles: ["PlatformAdmin", "SchoolAdmin", "Teacher"],
-  },
-  {
-    title: "Students",
-    url: "/school/students",
-    icon: Users,
-    roles: ["PlatformAdmin", "SchoolAdmin", "Teacher"],
-  },
-]
-
-const managementNav: NavItem[] = [
-  {
-    title: "Schools",
-    url: "/management/schools",
-    icon: School,
-    roles: ["PlatformAdmin"],
-  },
-  {
-    title: "Users",
-    url: "/management/users",
-    icon: Users,
-    roles: ["PlatformAdmin", "SchoolAdmin"],
-  },
-  {
-    title: "Settings",
-    url: "/settings",
-    icon: Settings,
-  },
-]
 
 export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
   const { user, logout } = useAuth();
   const navigate = useNavigate();
   const location = useLocation();
+  const { t, i18n } = useTranslation();
+
+  const navMain: NavItem[] = [
+    {
+      titleKey: "nav.dashboard",
+      url: "/dashboard",
+      icon: LayoutDashboard,
+    },
+    {
+      titleKey: "nav.contentLab",
+      url: "#",
+      icon: Sparkles,
+      roles: ["PlatformAdmin", "SchoolAdmin"],
+      children: [
+        { titleKey: "nav.aiStoryGenerator", url: "/ai/generate" },
+        { titleKey: "nav.storyBuilder", url: "/stories/new" },
+        { titleKey: "nav.assetLibrary", url: "/assets" },
+      ],
+    },
+    {
+      titleKey: "nav.library",
+      url: "/library",
+      icon: Library,
+    },
+    {
+      titleKey: "nav.analytics",
+      url: "/analytics",
+      icon: BarChart3,
+      roles: ["PlatformAdmin", "SchoolAdmin", "Teacher"],
+    },
+  ];
+
+  const schoolNav: NavItem[] = [
+    {
+      titleKey: "nav.teacherHub",
+      url: "/school/teacher",
+      icon: GraduationCap,
+      roles: ["Teacher", "SchoolAdmin"],
+    },
+    {
+      titleKey: "nav.classes",
+      url: "/school/classes",
+      icon: GraduationCap,
+      roles: ["PlatformAdmin", "SchoolAdmin", "Teacher"],
+    },
+    {
+      titleKey: "nav.students",
+      url: "/school/students",
+      icon: Users,
+      roles: ["PlatformAdmin", "SchoolAdmin", "Teacher"],
+    },
+  ];
+
+  const managementNav: NavItem[] = [
+    {
+      titleKey: "nav.schools",
+      url: "/management/schools",
+      icon: School,
+      roles: ["PlatformAdmin"],
+    },
+    {
+      titleKey: "nav.users",
+      url: "/management/users",
+      icon: Users,
+      roles: ["PlatformAdmin", "SchoolAdmin"],
+    },
+    {
+      titleKey: "nav.settings",
+      url: "/settings",
+      icon: Settings,
+    },
+  ];
 
   const handleLogout = () => {
     logout();
     navigate('/login');
+  };
+
+  const toggleLanguage = () => {
+    const newLang = i18n.language === 'tr' ? 'en' : 'tr';
+    i18n.changeLanguage(newLang);
   };
 
   const userDisplayName = user?.email.split('@')[0] || "User";
@@ -148,8 +157,8 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                   <BookOpen className="size-4" />
                 </div>
                 <div className="grid flex-1 text-left text-sm leading-tight">
-                  <span className="truncate font-semibold">Zarife</span>
-                  <span className="truncate text-xs">Educational Platform</span>
+                  <span className="truncate font-semibold">{t('brand.name')}</span>
+                  <span className="truncate text-xs">{t('brand.tagline')}</span>
                 </div>
               </Link>
             </SidebarMenuButton>
@@ -158,24 +167,24 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Platform</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('nav.platform')}</SidebarGroupLabel>
           <SidebarMenu>
             {filterByRole(navMain).map((item) => (
-              <SidebarMenuItem key={item.title}>
+              <SidebarMenuItem key={item.titleKey}>
                 {item.children ? (
                    <div className="group/menu-item relative">
-                     <SidebarMenuButton tooltip={item.title} isActive={item.children.some(c => isActive(c.url))}>
+                     <SidebarMenuButton tooltip={t(item.titleKey)} isActive={item.children.some(c => isActive(c.url))}>
                         {item.icon && <item.icon />}
-                        <span>{item.title}</span>
+                        <span>{t(item.titleKey)}</span>
                         <ChevronRight className="ml-auto transition-transform group-hover/menu-item:rotate-90" />
                      </SidebarMenuButton>
                      <div className="hidden group-hover/menu-item:block pl-4">
                         <SidebarMenuSub>
                           {item.children.map((sub) => (
-                            <SidebarMenuSubItem key={sub.title}>
+                            <SidebarMenuSubItem key={sub.titleKey}>
                               <SidebarMenuSubButton asChild isActive={isActive(sub.url)}>
                                 <Link to={sub.url}>
-                                  <span>{sub.title}</span>
+                                  <span>{t(sub.titleKey)}</span>
                                 </Link>
                               </SidebarMenuSubButton>
                             </SidebarMenuSubItem>
@@ -184,10 +193,10 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                      </div>
                    </div>
                 ) : (
-                   <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(item.url)}>
+                   <SidebarMenuButton asChild tooltip={t(item.titleKey)} isActive={isActive(item.url)}>
                     <Link to={item.url}>
                       {item.icon && <item.icon />}
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 )}
@@ -198,14 +207,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
 
         {filterByRole(schoolNav).length > 0 && (
           <SidebarGroup>
-            <SidebarGroupLabel>School</SidebarGroupLabel>
+            <SidebarGroupLabel>{t('nav.school')}</SidebarGroupLabel>
             <SidebarMenu>
               {filterByRole(schoolNav).map((item) => (
-                <SidebarMenuItem key={item.title}>
-                  <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(item.url)}>
+                <SidebarMenuItem key={item.titleKey}>
+                  <SidebarMenuButton asChild tooltip={t(item.titleKey)} isActive={isActive(item.url)}>
                     <Link to={item.url}>
                       {item.icon && <item.icon />}
-                      <span>{item.title}</span>
+                      <span>{t(item.titleKey)}</span>
                     </Link>
                   </SidebarMenuButton>
                 </SidebarMenuItem>
@@ -215,14 +224,14 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
         )}
 
         <SidebarGroup className="group-data-[collapsible=icon]:hidden">
-          <SidebarGroupLabel>Management</SidebarGroupLabel>
+          <SidebarGroupLabel>{t('nav.management')}</SidebarGroupLabel>
           <SidebarMenu>
             {filterByRole(managementNav).map((item) => (
-              <SidebarMenuItem key={item.title}>
-                <SidebarMenuButton asChild tooltip={item.title} isActive={isActive(item.url)}>
+              <SidebarMenuItem key={item.titleKey}>
+                <SidebarMenuButton asChild tooltip={t(item.titleKey)} isActive={isActive(item.url)}>
                   <Link to={item.url}>
                     {item.icon && <item.icon />}
-                    <span>{item.title}</span>
+                    <span>{t(item.titleKey)}</span>
                   </Link>
                 </SidebarMenuButton>
               </SidebarMenuItem>
@@ -232,6 +241,17 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
       </SidebarContent>
       <SidebarFooter>
         <SidebarMenu>
+          <SidebarMenuItem>
+            <Button
+              variant="ghost"
+              size="sm"
+              className="w-full justify-start gap-2 px-2"
+              onClick={toggleLanguage}
+            >
+              <Languages className="h-4 w-4" />
+              <span className="text-xs">{i18n.language === 'tr' ? 'TR' : 'EN'}</span>
+            </Button>
+          </SidebarMenuItem>
           <SidebarMenuItem>
             <DropdownMenu>
               <DropdownMenuTrigger asChild>
@@ -268,7 +288,7 @@ export function AppSidebar({ ...props }: React.ComponentProps<typeof Sidebar>) {
                 <DropdownMenuSeparator />
                 <DropdownMenuItem onClick={handleLogout}>
                   <LogOut className="mr-2 h-4 w-4" />
-                  Log out
+                  {t('actions.logOut')}
                 </DropdownMenuItem>
               </DropdownMenuContent>
             </DropdownMenu>

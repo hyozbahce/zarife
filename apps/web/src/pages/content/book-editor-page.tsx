@@ -10,11 +10,13 @@ import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle, Loader2, ArrowLeft } from 'lucide-react';
 import { getErrorMessage } from '@/lib/utils';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 
 export default function BookEditorPage() {
   const { id } = useParams();
   const navigate = useNavigate();
   const isEditing = !!id;
+  const { t } = useTranslation();
 
   const [form, setForm] = useState<CreateBookRequest>({
     title: '',
@@ -95,13 +97,13 @@ export default function BookEditorPage() {
           <Link to="/library"><ArrowLeft className="h-4 w-4" /></Link>
         </Button>
         <h2 className="text-3xl font-bold tracking-tight">
-          {isEditing ? 'Edit Book' : 'Create New Book'}
+          {isEditing ? t('content.editor.editBook') : t('content.editor.createNewBook')}
         </h2>
       </div>
 
       <Card>
         <CardHeader>
-          <CardTitle>Book Information</CardTitle>
+          <CardTitle>{t('content.editor.bookInformation')}</CardTitle>
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
@@ -114,7 +116,7 @@ export default function BookEditorPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="title">Title *</Label>
+                <Label htmlFor="title">{t('content.editor.title')}</Label>
                 <Input
                   id="title"
                   value={form.title}
@@ -123,7 +125,7 @@ export default function BookEditorPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="author">Author</Label>
+                <Label htmlFor="author">{t('content.editor.author')}</Label>
                 <Input
                   id="author"
                   value={form.author}
@@ -134,7 +136,7 @@ export default function BookEditorPage() {
 
             <div className="grid gap-4 md:grid-cols-2">
               <div className="space-y-2">
-                <Label htmlFor="illustrator">Illustrator</Label>
+                <Label htmlFor="illustrator">{t('content.editor.illustrator')}</Label>
                 <Input
                   id="illustrator"
                   value={form.illustrator}
@@ -142,23 +144,23 @@ export default function BookEditorPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="language">Language</Label>
+                <Label htmlFor="language">{t('content.editor.language')}</Label>
                 <select
                   id="language"
                   value={form.language}
                   onChange={(e) => setForm({ ...form, language: e.target.value })}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
                 >
-                  <option value="tr">Turkish</option>
-                  <option value="en">English</option>
-                  <option value="ar">Arabic</option>
+                  <option value="tr">{t('content.editor.turkish')}</option>
+                  <option value="en">{t('content.editor.english')}</option>
+                  <option value="ar">{t('content.editor.arabic')}</option>
                 </select>
               </div>
             </div>
 
             <div className="grid gap-4 md:grid-cols-3">
               <div className="space-y-2">
-                <Label htmlFor="targetAgeMin">Min Age</Label>
+                <Label htmlFor="targetAgeMin">{t('content.editor.minAge')}</Label>
                 <Input
                   id="targetAgeMin"
                   type="number"
@@ -169,7 +171,7 @@ export default function BookEditorPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="targetAgeMax">Max Age</Label>
+                <Label htmlFor="targetAgeMax">{t('content.editor.maxAge')}</Label>
                 <Input
                   id="targetAgeMax"
                   type="number"
@@ -180,7 +182,7 @@ export default function BookEditorPage() {
                 />
               </div>
               <div className="space-y-2">
-                <Label htmlFor="duration">Duration (minutes)</Label>
+                <Label htmlFor="duration">{t('content.editor.duration')}</Label>
                 <Input
                   id="duration"
                   type="number"
@@ -192,7 +194,7 @@ export default function BookEditorPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">{t('content.editor.description')}</Label>
               <textarea
                 id="description"
                 value={form.description}
@@ -203,15 +205,15 @@ export default function BookEditorPage() {
             </div>
 
             <div className="space-y-2">
-              <Label>Categories</Label>
+              <Label>{t('content.editor.categories')}</Label>
               <div className="flex gap-2">
                 <Input
                   value={categoryInput}
                   onChange={(e) => setCategoryInput(e.target.value)}
-                  placeholder="Add category..."
+                  placeholder={t('content.editor.addCategoryPlaceholder')}
                   onKeyDown={(e) => { if (e.key === 'Enter') { e.preventDefault(); addCategory(); } }}
                 />
-                <Button type="button" variant="secondary" onClick={addCategory}>Add</Button>
+                <Button type="button" variant="secondary" onClick={addCategory}>{t('content.editor.add')}</Button>
               </div>
               {form.categories && form.categories.length > 0 && (
                 <div className="flex flex-wrap gap-2 mt-2">
@@ -230,13 +232,13 @@ export default function BookEditorPage() {
 
             <div className="flex justify-end gap-3">
               <Button type="button" variant="outline" onClick={() => navigate('/library')}>
-                Cancel
+                {t('content.editor.cancel')}
               </Button>
               <Button type="submit" disabled={isLoading}>
                 {isLoading ? (
-                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isEditing ? 'Saving...' : 'Creating...'}</>
+                  <><Loader2 className="mr-2 h-4 w-4 animate-spin" />{isEditing ? t('content.editor.saving') : t('content.editor.creating')}</>
                 ) : (
-                  isEditing ? 'Save Changes' : 'Create Book'
+                  isEditing ? t('content.editor.saveChanges') : t('content.editor.createBook')
                 )}
               </Button>
             </div>

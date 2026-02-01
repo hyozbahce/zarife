@@ -4,12 +4,12 @@ import { Button } from '@/components/ui/button';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { 
-  Plus, 
-  Building2, 
-  Calendar, 
-  MoreHorizontal, 
-  Trash2, 
+import {
+  Plus,
+  Building2,
+  Calendar,
+  MoreHorizontal,
+  Trash2,
   ExternalLink,
   ShieldCheck
 } from 'lucide-react';
@@ -23,11 +23,13 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { CreateSchoolModal } from '@/components/management/create-school-modal';
 import type { SchoolResponse } from '../../types/management';
+import { useTranslation } from 'react-i18next';
 
 export default function SchoolsPage() {
   const [schools, setSchools] = useState<SchoolResponse[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [isModalOpen, setIsModalOpen] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     fetchSchools();
@@ -45,8 +47,8 @@ export default function SchoolsPage() {
   };
 
   const handleDelete = async (id: string, name: string) => {
-    if (!confirm(`Are you sure you want to delete "${name}"? This action cannot be undone.`)) return;
-    
+    if (!confirm(t('management.schools.confirmDelete', { name }))) return;
+
     try {
       await api.delete(`/api/management/schools/${id}`);
       setSchools(schools.filter(s => s.id !== id));
@@ -59,11 +61,11 @@ export default function SchoolsPage() {
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
         <div>
-          <h2 className="text-3xl font-bold tracking-tight">Schools</h2>
-          <p className="text-muted-foreground italic">Manage educational institutions and their administrators.</p>
+          <h2 className="text-3xl font-bold tracking-tight">{t('management.schools.title')}</h2>
+          <p className="text-muted-foreground italic">{t('management.schools.description')}</p>
         </div>
         <Button onClick={() => setIsModalOpen(true)} className="shadow-lg shadow-primary/20">
-          <Plus className="mr-2 h-4 w-4" /> Add New School
+          <Plus className="mr-2 h-4 w-4" /> {t('management.schools.addNewSchool')}
         </Button>
       </div>
 
@@ -71,27 +73,27 @@ export default function SchoolsPage() {
         <CardHeader>
           <div className="flex items-center justify-between">
             <div>
-              <CardTitle>Registered Schools</CardTitle>
-              <CardDescription>A list of all schools currently on the platform.</CardDescription>
+              <CardTitle>{t('management.schools.registeredSchools')}</CardTitle>
+              <CardDescription>{t('management.schools.registeredSchoolsDesc')}</CardDescription>
             </div>
-            <Badge variant="outline" className="font-mono">{schools.length} total</Badge>
+            <Badge variant="outline" className="font-mono">{t('management.schools.total', { count: schools.length })}</Badge>
           </div>
         </CardHeader>
         <CardContent>
           <Table>
             <TableHeader>
               <TableRow className="hover:bg-transparent">
-                <TableHead className="w-[400px]">School Details</TableHead>
-                <TableHead>Created At</TableHead>
-                <TableHead>Status</TableHead>
-                <TableHead className="text-right">Actions</TableHead>
+                <TableHead className="w-[400px]">{t('management.schools.schoolDetails')}</TableHead>
+                <TableHead>{t('management.schools.createdAt')}</TableHead>
+                <TableHead>{t('management.schools.status')}</TableHead>
+                <TableHead className="text-right">{t('management.schools.actions')}</TableHead>
               </TableRow>
             </TableHeader>
             <TableBody>
               {isLoading ? (
                 <TableRow>
                   <TableCell colSpan={4} className="text-center py-20 text-muted-foreground animate-pulse">
-                    Retrieving records...
+                    {t('management.schools.retrievingRecords')}
                   </TableCell>
                 </TableRow>
               ) : schools.length === 0 ? (
@@ -99,8 +101,8 @@ export default function SchoolsPage() {
                   <TableCell colSpan={4} className="text-center py-20">
                     <div className="flex flex-col items-center gap-2">
                        <Building2 className="h-10 w-10 text-muted-foreground/50" />
-                       <p className="text-muted-foreground font-medium">No schools found</p>
-                       <Button variant="link" onClick={() => setIsModalOpen(true)}>Create the first one</Button>
+                       <p className="text-muted-foreground font-medium">{t('management.schools.noSchools')}</p>
+                       <Button variant="link" onClick={() => setIsModalOpen(true)}>{t('management.schools.createFirst')}</Button>
                     </div>
                   </TableCell>
                 </TableRow>
@@ -133,28 +135,28 @@ export default function SchoolsPage() {
                     <TableCell>
                        <Badge variant="secondary" className="bg-emerald-100 text-emerald-700 dark:bg-emerald-900/30 dark:text-emerald-400 border-none">
                           <ShieldCheck className="mr-1 h-3 w-3" />
-                          Active
+                          {t('management.schools.active')}
                        </Badge>
                     </TableCell>
                     <TableCell className="text-right">
                       <DropdownMenu>
                         <DropdownMenuTrigger asChild>
                           <Button variant="ghost" className="h-8 w-8 p-0 opacity-0 group-hover:opacity-100 transition-opacity">
-                            <span className="sr-only">Open menu</span>
+                            <span className="sr-only">{t('management.schools.openMenu')}</span>
                             <MoreHorizontal className="h-4 w-4" />
                           </Button>
                         </DropdownMenuTrigger>
                         <DropdownMenuContent align="end" className="w-48">
-                          <DropdownMenuLabel>Actions</DropdownMenuLabel>
+                          <DropdownMenuLabel>{t('management.schools.actions')}</DropdownMenuLabel>
                           <DropdownMenuItem className="cursor-pointer">
-                            <ExternalLink className="mr-2 h-4 w-4" /> View Details
+                            <ExternalLink className="mr-2 h-4 w-4" /> {t('management.schools.viewDetails')}
                           </DropdownMenuItem>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem 
+                          <DropdownMenuItem
                             className="text-destructive cursor-pointer"
                             onClick={() => handleDelete(school.id, school.name)}
                           >
-                            <Trash2 className="mr-2 h-4 w-4" /> Delete School
+                            <Trash2 className="mr-2 h-4 w-4" /> {t('management.schools.deleteSchool')}
                           </DropdownMenuItem>
                         </DropdownMenuContent>
                       </DropdownMenu>
@@ -167,10 +169,10 @@ export default function SchoolsPage() {
         </CardContent>
       </Card>
 
-      <CreateSchoolModal 
-        isOpen={isModalOpen} 
-        onClose={() => setIsModalOpen(false)} 
-        onSuccess={fetchSchools} 
+      <CreateSchoolModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        onSuccess={fetchSchools}
       />
     </div>
   );

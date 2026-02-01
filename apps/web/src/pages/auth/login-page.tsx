@@ -10,6 +10,7 @@ import { Checkbox } from '@/components/ui/checkbox';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BookOpen, AlertCircle, Loader2 } from 'lucide-react';
 import { getErrorMessage } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -18,6 +19,7 @@ export default function LoginPage() {
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -29,7 +31,7 @@ export default function LoginPage() {
       login(response.data);
       navigate('/');
     } catch (err: unknown) {
-      setError(getErrorMessage(err) || 'Invalid email or password');
+      setError(getErrorMessage(err) || t('auth.login.defaultError'));
     } finally {
       setIsLoading(false);
     }
@@ -42,18 +44,18 @@ export default function LoginPage() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
             <BookOpen className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Welcome back</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('auth.login.welcomeBack')}</h1>
           <p className="text-sm text-muted-foreground">
-            Enter your credentials to access your Zarife account
+            {t('auth.login.enterCredentials')}
           </p>
         </div>
 
         <Card className="border-zinc-200/50 dark:border-zinc-800/50 shadow-xl shadow-zinc-200/20 dark:shadow-none">
           <form onSubmit={handleSubmit}>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-xl">Login</CardTitle>
+              <CardTitle className="text-xl">{t('auth.login.title')}</CardTitle>
               <CardDescription>
-                Login with your school email or personal account
+                {t('auth.login.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -64,11 +66,11 @@ export default function LoginPage() {
                 </Alert>
               )}
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('auth.login.email')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="name@school.edu.tr"
+                  placeholder={t('auth.login.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -77,12 +79,12 @@ export default function LoginPage() {
               </div>
               <div className="grid gap-2">
                 <div className="flex items-center justify-between">
-                  <Label htmlFor="password">Password</Label>
+                  <Label htmlFor="password">{t('auth.login.password')}</Label>
                   <Link
                     to="/forgot-password"
                     className="text-xs text-primary hover:underline hover:underline-offset-4"
                   >
-                    Forgot password?
+                    {t('auth.login.forgotPassword')}
                   </Link>
                 </div>
                 <Input
@@ -100,7 +102,7 @@ export default function LoginPage() {
                   htmlFor="remember"
                   className="text-sm font-medium leading-none peer-disabled:cursor-not-allowed peer-disabled:opacity-70"
                 >
-                  Remember me for 30 days
+                  {t('auth.login.rememberMe')}
                 </Label>
               </div>
             </CardContent>
@@ -109,28 +111,28 @@ export default function LoginPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Signing in...
+                    {t('auth.login.signingIn')}
                   </>
                 ) : (
-                  'Sign In'
+                  t('auth.login.signIn')
                 )}
               </Button>
               <div className="text-center text-sm text-muted-foreground">
-                Don&apos;t have an account?{' '}
-                <span className="text-primary font-medium">Contact your platform administrator</span>
+                {t('auth.login.noAccount')}{' '}
+                <span className="text-primary font-medium">{t('auth.login.contactAdmin')}</span>
               </div>
             </CardFooter>
           </form>
         </Card>
 
         <p className="px-8 text-center text-xs text-muted-foreground">
-          By clicking continue, you agree to our{' '}
+          {t('auth.login.terms')}{' '}
           <Link to="/terms" className="underline underline-offset-4 hover:text-primary">
-            Terms of Service
+            {t('auth.login.termsOfService')}
           </Link>{' '}
-          and{' '}
+          {t('auth.login.and')}{' '}
           <Link to="/privacy" className="underline underline-offset-4 hover:text-primary">
-            Privacy Policy
+            {t('auth.login.privacyPolicy')}
           </Link>
           .
         </p>

@@ -1,34 +1,37 @@
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card"
 import { Button } from "@/components/ui/button"
 import { Sparkles, Users, Building2, BookOpen, TrendingUp, ArrowUpRight } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 export default function DashboardPage() {
+  const { t } = useTranslation();
+
   const stats = [
-    { 
-      title: "Total Schools", 
-      value: "2", 
-      sub: "+100% since start", 
+    {
+      title: t('dashboard.totalSchools'),
+      value: "2",
+      sub: t('dashboard.sinceLaunch'),
       icon: Building2,
       trend: "+2"
     },
-    { 
-      title: "Active Students", 
-      value: "0", 
-      sub: "Waiting for enrollment", 
+    {
+      title: t('dashboard.activeStudents'),
+      value: "0",
+      sub: t('dashboard.waitingEnrollment'),
       icon: Users,
       trend: "0"
     },
-    { 
-      title: "Books Created", 
-      value: "0", 
-      sub: "No books yet", 
+    {
+      title: t('dashboard.booksCreated'),
+      value: "0",
+      sub: t('dashboard.noBooks'),
       icon: BookOpen,
       trend: "0"
     },
-    { 
-      title: "Generation Credit", 
-      value: "Unlimited", 
-      sub: "Enterprise Plan", 
+    {
+      title: t('dashboard.generationCredit'),
+      value: t('dashboard.unlimited'),
+      sub: t('dashboard.enterprisePlan'),
       icon: Sparkles,
       trend: "Premium"
     },
@@ -37,15 +40,15 @@ export default function DashboardPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
-        <h2 className="text-3xl font-bold tracking-tight">Dashboard Overview</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('dashboard.title')}</h2>
         <div className="flex items-center space-x-2">
           <Button size="sm">
             <TrendingUp className="mr-2 h-4 w-4" />
-            Insights
+            {t('dashboard.insights')}
           </Button>
         </div>
       </div>
-      
+
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
         {stats.map((stat) => (
           <Card key={stat.title} className="overflow-hidden transition-all hover:shadow-md">
@@ -67,28 +70,28 @@ export default function DashboardPage() {
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-7">
         <Card className="col-span-4 transition-all hover:shadow-md">
           <CardHeader>
-            <CardTitle>School Growth</CardTitle>
+            <CardTitle>{t('dashboard.schoolGrowth')}</CardTitle>
             <CardDescription>
-              Onboarding status across the platform.
+              {t('dashboard.schoolGrowthDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent className="h-[300px] flex items-center justify-center text-muted-foreground border-2 border-dashed rounded-lg m-6 mt-0">
-            Analytics visualization coming soon...
+            {t('dashboard.analyticsComingSoon')}
           </CardContent>
         </Card>
-        
+
         <Card className="col-span-3 transition-all hover:shadow-md">
           <CardHeader>
-            <CardTitle>Recent Activity</CardTitle>
+            <CardTitle>{t('dashboard.recentActivity')}</CardTitle>
             <CardDescription>
-              Latest updates from the platform.
+              {t('dashboard.recentActivityDesc')}
             </CardDescription>
           </CardHeader>
           <CardContent>
             <div className="space-y-8">
                <div className="flex items-center">
                  <div className="ml-4 space-y-1">
-                   <p className="text-sm font-medium leading-none text-muted-foreground italic">No recent activity found.</p>
+                   <p className="text-sm font-medium leading-none text-muted-foreground italic">{t('dashboard.noRecentActivity')}</p>
                  </div>
                </div>
             </div>

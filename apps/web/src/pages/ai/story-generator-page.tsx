@@ -18,6 +18,7 @@ import {
   CardTitle,
 } from "@/components/ui/card"
 import { Sparkles, Loader2, Languages, Volume2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 interface GeneratedStory {
   title: string
@@ -27,6 +28,7 @@ interface GeneratedStory {
 
 export default function StoryGeneratorPage() {
   const { token } = useAuth()
+  const { t } = useTranslation()
   const [topic, setTopic] = useState("")
   const [language, setLanguage] = useState("tr")
   const [ageMin, setAgeMin] = useState("4")
@@ -145,26 +147,26 @@ export default function StoryGeneratorPage() {
   }
 
   return (
-    <div className="space-y-6">
+    <div className="flex-1 space-y-6 p-8 pt-6">
       <div>
-        <h1 className="text-3xl font-bold tracking-tight">AI Story Generator</h1>
+        <h1 className="text-3xl font-bold tracking-tight">{t('content.ai.title')}</h1>
         <p className="text-muted-foreground">
-          Generate children's stories using AI, translate them, and create narration audio.
+          {t('content.ai.description')}
         </p>
       </div>
 
       <div className="grid gap-6 md:grid-cols-2">
         <Card>
           <CardHeader>
-            <CardTitle>Story Parameters</CardTitle>
-            <CardDescription>Configure your story generation settings</CardDescription>
+            <CardTitle>{t('content.ai.storyParams')}</CardTitle>
+            <CardDescription>{t('content.ai.configureSettings')}</CardDescription>
           </CardHeader>
           <CardContent className="space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="topic">Topic / Theme</Label>
+              <Label htmlFor="topic">{t('content.ai.topic')}</Label>
               <Input
                 id="topic"
-                placeholder="e.g., A brave little cat who learns to swim"
+                placeholder={t('content.ai.topicPlaceholder')}
                 value={topic}
                 onChange={(e) => setTopic(e.target.value)}
               />
@@ -172,44 +174,44 @@ export default function StoryGeneratorPage() {
 
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label>Language</Label>
+                <Label>{t('content.ai.language')}</Label>
                 <Select value={language} onValueChange={setLanguage}>
                   <SelectTrigger>
                     <SelectValue />
                   </SelectTrigger>
                   <SelectContent>
-                    <SelectItem value="tr">Turkish</SelectItem>
-                    <SelectItem value="en">English</SelectItem>
+                    <SelectItem value="tr">{t('content.ai.turkish')}</SelectItem>
+                    <SelectItem value="en">{t('content.ai.english')}</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
               <div className="grid grid-cols-2 gap-2">
                 <div className="space-y-2">
-                  <Label>Age Min</Label>
+                  <Label>{t('content.ai.ageMin')}</Label>
                   <Input type="number" value={ageMin} onChange={(e) => setAgeMin(e.target.value)} />
                 </div>
                 <div className="space-y-2">
-                  <Label>Age Max</Label>
+                  <Label>{t('content.ai.ageMax')}</Label>
                   <Input type="number" value={ageMax} onChange={(e) => setAgeMax(e.target.value)} />
                 </div>
               </div>
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="goal">Educational Goal (optional)</Label>
+              <Label htmlFor="goal">{t('content.ai.educationalGoal')}</Label>
               <Input
                 id="goal"
-                placeholder="e.g., Teaching sharing and kindness"
+                placeholder={t('content.ai.educationalGoalPlaceholder')}
                 value={educationalGoal}
                 onChange={(e) => setEducationalGoal(e.target.value)}
               />
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="style">Style Notes (optional)</Label>
+              <Label htmlFor="style">{t('content.ai.styleNotes')}</Label>
               <Input
                 id="style"
-                placeholder="e.g., Funny, with rhyming"
+                placeholder={t('content.ai.styleNotesPlaceholder')}
                 value={styleNotes}
                 onChange={(e) => setStyleNotes(e.target.value)}
               />
@@ -217,9 +219,9 @@ export default function StoryGeneratorPage() {
 
             <Button onClick={handleGenerate} disabled={generating || !topic.trim()} className="w-full">
               {generating ? (
-                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Generating...</>
+                <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('content.ai.generating')}</>
               ) : (
-                <><Sparkles className="mr-2 h-4 w-4" /> Generate Story</>
+                <><Sparkles className="mr-2 h-4 w-4" /> {t('content.ai.generateStory')}</>
               )}
             </Button>
           </CardContent>
@@ -227,9 +229,9 @@ export default function StoryGeneratorPage() {
 
         <Card>
           <CardHeader>
-            <CardTitle>Generated Story</CardTitle>
+            <CardTitle>{t('content.ai.generatedStory')}</CardTitle>
             <CardDescription>
-              {story ? story.title : "Your AI-generated story will appear here"}
+              {story ? story.title : t('content.ai.storyPlaceholder')}
             </CardDescription>
           </CardHeader>
           <CardContent>
@@ -270,15 +272,15 @@ export default function StoryGeneratorPage() {
                       <SelectValue />
                     </SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="en">English</SelectItem>
-                      <SelectItem value="tr">Turkish</SelectItem>
+                      <SelectItem value="en">{t('content.ai.english')}</SelectItem>
+                      <SelectItem value="tr">{t('content.ai.turkish')}</SelectItem>
                     </SelectContent>
                   </Select>
                   <Button variant="outline" onClick={handleTranslate} disabled={translating}>
                     {translating ? (
-                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> Translating...</>
+                      <><Loader2 className="mr-2 h-4 w-4 animate-spin" /> {t('content.ai.translating')}</>
                     ) : (
-                      <><Languages className="mr-2 h-4 w-4" /> Translate</>
+                      <><Languages className="mr-2 h-4 w-4" /> {t('content.ai.translate')}</>
                     )}
                   </Button>
                 </div>

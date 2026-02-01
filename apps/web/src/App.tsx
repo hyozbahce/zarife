@@ -19,6 +19,7 @@ import CurriculumPage from "@/pages/school/curriculum-page"
 import StoryGeneratorPage from "@/pages/ai/story-generator-page"
 import { useAuth } from "@/contexts/auth-context"
 import { Loader2 } from "lucide-react"
+import { useTranslation } from "react-i18next"
 
 function ProtectedRoute({ children, requiredRole }: { children: React.ReactNode, requiredRole?: string }) {
   const { isAuthenticated, isLoading, user } = useAuth();
@@ -53,6 +54,8 @@ function DashboardRoute({ children, requiredRole }: { children: React.ReactNode,
 }
 
 function App() {
+  const { t } = useTranslation();
+
   return (
     <BrowserRouter>
       <Routes>
@@ -95,7 +98,7 @@ function App() {
           element={
             <DashboardRoute>
               <div className="flex h-[50vh] items-center justify-center">
-                <h1 className="text-2xl font-semibold italic text-muted-foreground">Coming Soon...</h1>
+                <h1 className="text-2xl font-semibold italic text-muted-foreground">{t('comingSoon')}</h1>
               </div>
             </DashboardRoute>
           }

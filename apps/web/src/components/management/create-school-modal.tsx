@@ -14,6 +14,7 @@ import {
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { Loader2, AlertCircle } from 'lucide-react';
 import { getErrorMessage } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 interface CreateSchoolModalProps {
   isOpen: boolean;
@@ -27,6 +28,7 @@ export function CreateSchoolModal({ isOpen, onClose, onSuccess }: CreateSchoolMo
   const [adminPassword, setAdminPassword] = useState('');
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState<string | null>(null);
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -43,7 +45,7 @@ export function CreateSchoolModal({ isOpen, onClose, onSuccess }: CreateSchoolMo
       onClose();
       resetForm();
     } catch (err: unknown) {
-      setError(getErrorMessage(err) || 'Failed to create school. Check if email is already in use.');
+      setError(getErrorMessage(err) || t('management.createSchool.defaultError'));
     } finally {
       setIsLoading(false);
     }
@@ -61,9 +63,9 @@ export function CreateSchoolModal({ isOpen, onClose, onSuccess }: CreateSchoolMo
       <DialogContent className="sm:max-w-[425px]">
         <form onSubmit={handleSubmit}>
           <DialogHeader>
-            <DialogTitle>Add New School</DialogTitle>
+            <DialogTitle>{t('management.createSchool.title')}</DialogTitle>
             <DialogDescription>
-              Create a new school tenant and its primary administrator account.
+              {t('management.createSchool.description')}
             </DialogDescription>
           </DialogHeader>
           <div className="grid gap-4 py-4">
@@ -74,50 +76,50 @@ export function CreateSchoolModal({ isOpen, onClose, onSuccess }: CreateSchoolMo
               </Alert>
             )}
             <div className="grid gap-2">
-              <Label htmlFor="school-name">School Name</Label>
+              <Label htmlFor="school-name">{t('management.createSchool.schoolName')}</Label>
               <Input
                 id="school-name"
                 value={name}
                 onChange={(e) => setName(e.target.value)}
-                placeholder="Atatürk İlköğretim Okulu"
+                placeholder={t('management.createSchool.schoolNamePlaceholder')}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="admin-email">Admin Email</Label>
+              <Label htmlFor="admin-email">{t('management.createSchool.adminEmail')}</Label>
               <Input
                 id="admin-email"
                 type="email"
                 value={adminEmail}
                 onChange={(e) => setAdminEmail(e.target.value)}
-                placeholder="admin@okul.k12.tr"
+                placeholder={t('management.createSchool.adminEmailPlaceholder')}
                 required
               />
             </div>
             <div className="grid gap-2">
-              <Label htmlFor="admin-password">Initial Password</Label>
+              <Label htmlFor="admin-password">{t('management.createSchool.initialPassword')}</Label>
               <Input
                 id="admin-password"
                 type="password"
                 value={adminPassword}
                 onChange={(e) => setAdminPassword(e.target.value)}
-                placeholder="Minimum 6 characters"
+                placeholder={t('management.createSchool.passwordPlaceholder')}
                 required
               />
             </div>
           </div>
           <DialogFooter>
             <Button variant="outline" type="button" onClick={onClose} disabled={isLoading}>
-              Cancel
+              {t('management.createSchool.cancel')}
             </Button>
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
                   <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                  Creating...
+                  {t('management.createSchool.creating')}
                 </>
               ) : (
-                'Create School'
+                t('management.createSchool.createSchool')
               )}
             </Button>
           </DialogFooter>

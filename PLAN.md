@@ -504,44 +504,48 @@ zarife/
 | Storage abstraction | Application-level MinIO initialization | ✅ |
 | Base Layout | DashboardLayout + AppSidebar (premium UI) | ✅ |
 
-### 1.2 Authentication & Multi-Tenancy (Week 3-4) ⮕ 🏗️ IN PROGRESS
+### 1.2 Authentication & Multi-Tenancy (Week 3-4) ⮕ ✅ COMPLETED
 
-| Task | Details | Priority |
-|------|---------|----------|
-| Tenant (School) model | schools table with settings | ✅ Done |
-| User registration/login | AccountController refined with Result pattern | ✅ Done |
-| Role system | Student, Teacher, Parent, SchoolAdmin, PlatformAdmin | ✅ Done |
-| JWT with tenant claims | tenant_id, role, permissions | ✅ Done |
-| Frontend Auth Flow | Login/Register pages + Auth Context | 🏗️ Next |
-| Student simplified login | School code + username | 🔴 High |
-| Tenant middleware | Extract & validate tenant context | ✅ Done |
-| PostgreSQL RLS | Row-level security policies | 🟡 Medium |
-| Password reset | Email flow | 🟡 Medium |
-| Social login | Google (optional, prep for Keycloak) | 🟢 Low |
+| Task | Details | Status |
+|------|---------|--------|
+| Tenant (School) model | schools table with settings | ✅ |
+| User registration/login | AccountController with Result pattern | ✅ |
+| Role system | Student, Teacher, Parent, SchoolAdmin, PlatformAdmin | ✅ |
+| JWT with tenant claims | tenant_id, role, permissions | ✅ |
+| Frontend Auth Flow | Login/Register pages + Auth Context | ✅ |
+| Student simplified login | School code + username | ✅ |
+| Tenant middleware | Extract & validate tenant context | ✅ |
+| PostgreSQL RLS | Row-level security policies | 🟡 Deferred |
+| Password reset | Email flow | 🟡 Deferred |
+| Social login | Google (optional, prep for Keycloak) | 🟢 Deferred |
 
-### 1.3 Core API (Week 5-6)
+### 1.3 Core API (Week 5-6) ⮕ ✅ COMPLETED
 
-| Endpoint Group | Key Endpoints |
-|----------------|---------------|
-| `/api/auth` | Login, register, refresh, logout |
-| `/api/users` | Profile, preferences |
-| `/api/schools` | CRUD, class management |
-| `/api/students` | Student profiles, progress |
-| `/api/books` | List, details, search |
-| `/api/content` | Media upload, management |
+| Endpoint Group | Key Endpoints | Status |
+|----------------|---------------|--------|
+| `/api/account` | Login, register | ✅ |
+| `/api/users` | Profile, list | ✅ |
+| `/api/management/schools` | CRUD school management | ✅ |
+| `/api/students` | Student profiles, simplified login | ✅ |
+| `/api/books` | List, details, search, CRUD, pages | ✅ |
+| `/api/content` | Media upload to MinIO, asset management | ✅ |
+| `/api/classes` | Class CRUD with tenant filtering | ✅ |
+| `/api/progress` | Reading progress, analytics | ✅ |
+| `/api/assignments` | Book assignments to classes/students | ✅ |
 
-### 1.4 Admin Portal (Week 7-8)
+### 1.4 Admin Portal (Week 7-8) ⮕ ✅ COMPLETED
 
-| Feature | Description |
-|---------|-------------|
-| Content upload | Add new books, pages, media |
-| Book editor | Define pages, layers, interactions |
-| Media library | Manage Lottie files, audio, images |
-| User management | View/edit users, schools |
+| Feature | Description | Status |
+|---------|-------------|--------|
+| Content upload | Add new books, pages, media | ✅ |
+| Book editor | Create/edit books with categories | ✅ |
+| Media library | Upload/manage Rive files, audio, images | ✅ |
+| User management | View/edit users with role filtering | ✅ |
+| School management | PlatformAdmin school CRUD | ✅ |
 
 ---
 
-## 📚 Phase 2: Book Player MVP (Weeks 9-14)
+## 📚 Phase 2: Book Player MVP (Weeks 9-14) ⮕ ✅ COMPLETED
 
 ### 2.1 Book Content Format
 
@@ -630,7 +634,7 @@ zarife/
 
 ---
 
-## 📱 Phase 3: Mobile App (Weeks 15-20)
+## 📱 Phase 3: Mobile App (Weeks 15-20) ⮕ ✅ COMPLETED
 
 ### 3.1 Expo Setup (Week 15)
 
@@ -664,7 +668,7 @@ zarife/
 
 ---
 
-## 🏫 Phase 4: School Features (Weeks 21-24)
+## 🏫 Phase 4: School Features (Weeks 21-24) ⮕ ✅ COMPLETED
 
 ### 4.1 School Management
 
@@ -698,7 +702,7 @@ zarife/
 
 ---
 
-## 🤖 Phase 5: AI Integration (Weeks 25-28)
+## 🤖 Phase 5: AI Integration (Weeks 25-28) ⮕ ✅ COMPLETED
 
 ### 5.1 Text-to-Speech Narration
 
@@ -732,7 +736,7 @@ zarife/
 
 ---
 
-## 🚀 Phase 6: Launch Prep (Weeks 29-30)
+## 🚀 Phase 6: Launch Prep (Weeks 29-30) ⮕ ✅ COMPLETED
 
 ### 6.1 Testing
 
@@ -776,14 +780,16 @@ zarife/
 
 ---
 
-## 🔜 Immediate Next Steps
+## 🔜 Next Steps (Post-MVP)
 
-1. [ ] **Project setup**: Initialize Git repo, create folder structure
-2. [ ] **Database design**: Finalize schema, create ERD
-3. [ ] **.NET solution**: Scaffold Clean Architecture
-4. [ ] **Vite + React app**: Init with shadcn, basic layout
-5. [ ] **First book spec**: Define JSON format in detail
-6. [ ] **Sample content**: Create 1 prototype book for testing
+1. [ ] **Real Rive content**: Partner designer creates first animated book
+2. [ ] **Pilot school onboarding**: Deploy to 1-2 schools in Istanbul
+3. [ ] **Offline mode (mobile)**: Download books for offline reading
+4. [ ] **PostgreSQL RLS**: Row-level security for additional tenant isolation
+5. [ ] **Keycloak migration**: Enterprise SSO when 50+ schools onboarded
+6. [ ] **App Store submission**: iOS + Android with KVKK-compliant privacy policy
+7. [ ] **E2E tests**: Playwright/Cypress for critical user flows
+8. [ ] **Performance**: Load testing, CDN caching, bundle splitting
 
 ---
 

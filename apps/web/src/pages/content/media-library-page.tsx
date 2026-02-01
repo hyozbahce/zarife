@@ -6,6 +6,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Upload, Trash2, Image, Music, Film, FileText } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface MediaAsset {
   id: string;
@@ -23,6 +24,7 @@ export default function MediaLibraryPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [isUploading, setIsUploading] = useState(false);
   const [filter, setFilter] = useState('');
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadAssets();
@@ -61,7 +63,7 @@ export default function MediaLibraryPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this asset?')) return;
+    if (!confirm(t('content.media.confirmDelete'))) return;
     try {
       await api.delete(`/api/content/assets/${id}`);
       setAssets(assets.filter(a => a.id !== id));
@@ -88,7 +90,7 @@ export default function MediaLibraryPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Media Library</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('content.media.title')}</h2>
         <div className="flex items-center gap-2">
           <Input
             type="file"
@@ -103,14 +105,21 @@ export default function MediaLibraryPage() {
       </div>
 
       <div className="flex gap-1">
-        {['', 'image', 'audio', 'animation', 'rive', 'other'].map((t) => (
+        {[
+          { value: '', label: t('content.media.all') },
+          { value: 'image', label: t('content.media.typeImage') },
+          { value: 'audio', label: t('content.media.typeAudio') },
+          { value: 'animation', label: t('content.media.typeAnimation') },
+          { value: 'rive', label: t('content.media.typeRive') },
+          { value: 'other', label: t('content.media.typeOther') },
+        ].map((tp) => (
           <Button
-            key={t}
-            variant={filter === t ? 'default' : 'outline'}
+            key={tp.value}
+            variant={filter === tp.value ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setFilter(t)}
+            onClick={() => setFilter(tp.value)}
           >
-            {t || 'All'}
+            {tp.label}
           </Button>
         ))}
       </div>
@@ -118,7 +127,7 @@ export default function MediaLibraryPage() {
       <Card>
         <CardHeader>
           <CardTitle className="text-sm font-medium">
-            {assets.length} asset{assets.length !== 1 ? 's' : ''}
+            {t('content.media.assetCount', { count: assets.length })}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -129,17 +138,17 @@ export default function MediaLibraryPage() {
           ) : assets.length === 0 ? (
             <div className="flex flex-col items-center justify-center py-12 text-muted-foreground">
               <Upload className="h-12 w-12 mb-4" />
-              <p>No assets uploaded yet. Upload your first file.</p>
+              <p>{t('content.media.noAssets')}</p>
             </div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Type</TableHead>
-                  <TableHead>File Name</TableHead>
-                  <TableHead>Size</TableHead>
-                  <TableHead>Bucket</TableHead>
-                  <TableHead>Uploaded</TableHead>
+                  <TableHead>{t('content.media.tableType')}</TableHead>
+                  <TableHead>{t('content.media.tableFileName')}</TableHead>
+                  <TableHead>{t('content.media.tableSize')}</TableHead>
+                  <TableHead>{t('content.media.tableBucket')}</TableHead>
+                  <TableHead>{t('content.media.tableUploaded')}</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>

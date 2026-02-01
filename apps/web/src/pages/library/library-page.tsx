@@ -8,6 +8,7 @@ import { Input } from '@/components/ui/input';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Search, Plus, Clock, Users } from 'lucide-react';
 import { useAuth } from '@/contexts/auth-context';
+import { useTranslation } from 'react-i18next';
 
 export default function LibraryPage() {
   const [books, setBooks] = useState<Book[]>([]);
@@ -15,6 +16,7 @@ export default function LibraryPage() {
   const [statusFilter, setStatusFilter] = useState<string>('');
   const [isLoading, setIsLoading] = useState(true);
   const { user } = useAuth();
+  const { t } = useTranslation();
 
   const isAdmin = user?.role === 'PlatformAdmin' || user?.role === 'SchoolAdmin';
 
@@ -50,11 +52,11 @@ export default function LibraryPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Book Library</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('library.title')}</h2>
         {isAdmin && (
           <Button asChild>
             <Link to="/stories/new">
-              <Plus className="mr-2 h-4 w-4" /> New Book
+              <Plus className="mr-2 h-4 w-4" /> {t('library.newBook')}
             </Link>
           </Button>
         )}
@@ -65,23 +67,28 @@ export default function LibraryPage() {
           <div className="relative flex-1 max-w-md">
             <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-muted-foreground" />
             <Input
-              placeholder="Search books..."
+              placeholder={t('library.searchPlaceholder')}
               value={search}
               onChange={(e) => setSearch(e.target.value)}
               className="pl-10"
             />
           </div>
-          <Button type="submit" variant="secondary">Search</Button>
+          <Button type="submit" variant="secondary">{t('library.search')}</Button>
         </form>
         <div className="flex gap-1">
-          {['', 'Draft', 'Review', 'Published'].map((s) => (
+          {[
+            { value: '', label: t('library.all') },
+            { value: 'Draft', label: t('library.statusDraft') },
+            { value: 'Review', label: t('library.statusReview') },
+            { value: 'Published', label: t('library.statusPublished') },
+          ].map((s) => (
             <Button
-              key={s}
-              variant={statusFilter === s ? 'default' : 'outline'}
+              key={s.value}
+              variant={statusFilter === s.value ? 'default' : 'outline'}
               size="sm"
-              onClick={() => setStatusFilter(s)}
+              onClick={() => setStatusFilter(s.value)}
             >
-              {s || 'All'}
+              {s.label}
             </Button>
           ))}
         </div>
@@ -94,13 +101,13 @@ export default function LibraryPage() {
       ) : books.length === 0 ? (
         <Card className="flex flex-col items-center justify-center py-16">
           <BookOpen className="h-16 w-16 text-muted-foreground mb-4" />
-          <h3 className="text-lg font-medium">No books found</h3>
+          <h3 className="text-lg font-medium">{t('library.noBooks')}</h3>
           <p className="text-sm text-muted-foreground mt-1">
-            {isAdmin ? 'Create your first book to get started.' : 'No books are available yet.'}
+            {isAdmin ? t('library.createFirst') : t('library.notAvailable')}
           </p>
           {isAdmin && (
             <Button asChild className="mt-4">
-              <Link to="/stories/new"><Plus className="mr-2 h-4 w-4" /> Create Book</Link>
+              <Link to="/stories/new"><Plus className="mr-2 h-4 w-4" /> {t('library.createBook')}</Link>
             </Button>
           )}
         </Card>
@@ -124,7 +131,7 @@ export default function LibraryPage() {
                     </Badge>
                   </div>
                   {book.author && (
-                    <p className="text-xs text-muted-foreground">by {book.author}</p>
+                    <p className="text-xs text-muted-foreground">{t('library.by')} {book.author}</p>
                   )}
                 </CardHeader>
                 <CardContent className="pb-2">
@@ -137,9 +144,9 @@ export default function LibraryPage() {
                     <Clock className="h-3 w-3" />{book.durationMinutes}m
                   </span>
                   <span className="flex items-center gap-1">
-                    <Users className="h-3 w-3" />Ages {book.targetAgeMin}-{book.targetAgeMax}
+                    <Users className="h-3 w-3" />{t('library.ages', { min: book.targetAgeMin, max: book.targetAgeMax })}
                   </span>
-                  <span>{book.pageCount} pages</span>
+                  <span>{t('library.pages', { count: book.pageCount })}</span>
                 </CardFooter>
               </Card>
             </Link>

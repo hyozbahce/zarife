@@ -9,6 +9,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { BookOpen, AlertCircle, Loader2 } from 'lucide-react';
 import { getErrorMessage } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function RegisterPage() {
   const [email, setEmail] = useState('');
@@ -18,12 +19,13 @@ export default function RegisterPage() {
   const [error, setError] = useState<string | null>(null);
   const { login } = useAuth();
   const navigate = useNavigate();
+  const { t } = useTranslation();
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
-    
+
     if (password !== confirmPassword) {
-      setError('Passwords do not match');
+      setError(t('auth.register.passwordsMismatch'));
       return;
     }
 
@@ -35,7 +37,7 @@ export default function RegisterPage() {
       login(response.data);
       navigate('/');
     } catch (err: unknown) {
-      setError(getErrorMessage(err) || 'Failed to create account');
+      setError(getErrorMessage(err) || t('auth.register.defaultError'));
     } finally {
       setIsLoading(false);
     }
@@ -48,18 +50,18 @@ export default function RegisterPage() {
           <div className="flex h-12 w-12 items-center justify-center rounded-xl bg-primary text-primary-foreground shadow-lg shadow-primary/20">
             <BookOpen className="h-6 w-6" />
           </div>
-          <h1 className="text-2xl font-bold tracking-tight">Create an account</h1>
+          <h1 className="text-2xl font-bold tracking-tight">{t('auth.register.createAccount')}</h1>
           <p className="text-sm text-muted-foreground">
-            Register your school to start the journey
+            {t('auth.register.registerSchool')}
           </p>
         </div>
 
         <Card className="border-zinc-200/50 dark:border-zinc-800/50 shadow-xl shadow-zinc-200/20 dark:shadow-none">
           <form onSubmit={handleSubmit}>
             <CardHeader className="space-y-1">
-              <CardTitle className="text-xl">Register</CardTitle>
+              <CardTitle className="text-xl">{t('auth.register.title')}</CardTitle>
               <CardDescription>
-                Enter your school email to create an account
+                {t('auth.register.description')}
               </CardDescription>
             </CardHeader>
             <CardContent className="grid gap-4">
@@ -70,11 +72,11 @@ export default function RegisterPage() {
                 </Alert>
               )}
               <div className="grid gap-2">
-                <Label htmlFor="email">Email</Label>
+                <Label htmlFor="email">{t('auth.register.email')}</Label>
                 <Input
                   id="email"
                   type="email"
-                  placeholder="admin@school.edu.tr"
+                  placeholder={t('auth.register.emailPlaceholder')}
                   value={email}
                   onChange={(e) => setEmail(e.target.value)}
                   required
@@ -82,7 +84,7 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="password">Password</Label>
+                <Label htmlFor="password">{t('auth.register.password')}</Label>
                 <Input
                   id="password"
                   type="password"
@@ -93,7 +95,7 @@ export default function RegisterPage() {
                 />
               </div>
               <div className="grid gap-2">
-                <Label htmlFor="confirm-password">Confirm Password</Label>
+                <Label htmlFor="confirm-password">{t('auth.register.confirmPassword')}</Label>
                 <Input
                   id="confirm-password"
                   type="password"
@@ -109,19 +111,19 @@ export default function RegisterPage() {
                 {isLoading ? (
                   <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Creating account...
+                    {t('auth.register.creatingAccount')}
                   </>
                 ) : (
-                  'Create Account'
+                  t('auth.register.createAccountBtn')
                 )}
               </Button>
               <div className="text-center text-sm text-muted-foreground">
-                Already have an account?{' '}
+                {t('auth.register.alreadyHaveAccount')}{' '}
                 <Link
                   to="/login"
                   className="text-primary font-medium hover:underline hover:underline-offset-4"
                 >
-                  Log in
+                  {t('auth.register.logIn')}
                 </Link>
               </div>
             </CardFooter>

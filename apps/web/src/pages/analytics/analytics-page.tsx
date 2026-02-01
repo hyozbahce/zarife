@@ -5,10 +5,12 @@ import { Card, CardContent, CardHeader, CardTitle, CardDescription } from '@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Badge } from '@/components/ui/badge';
 import { BookOpen, Clock, Target, Sparkles, TrendingUp } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function AnalyticsPage() {
   const [analytics, setAnalytics] = useState<AnalyticsResponse | null>(null);
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadAnalytics();
@@ -43,16 +45,16 @@ export default function AnalyticsPage() {
   if (!analytics) return null;
 
   const stats = [
-    { title: 'Books Completed', value: analytics.totalBooksRead, icon: BookOpen, color: 'text-green-500' },
-    { title: 'In Progress', value: analytics.totalBooksInProgress, icon: TrendingUp, color: 'text-blue-500' },
-    { title: 'Total Reading Time', value: formatTime(analytics.totalReadingTimeSeconds), icon: Clock, color: 'text-orange-500' },
-    { title: 'Completion Rate', value: `${analytics.completionRate.toFixed(1)}%`, icon: Target, color: 'text-purple-500' },
+    { title: t('analytics.booksCompleted'), value: analytics.totalBooksRead, icon: BookOpen, color: 'text-green-500' },
+    { title: t('analytics.inProgress'), value: analytics.totalBooksInProgress, icon: TrendingUp, color: 'text-blue-500' },
+    { title: t('analytics.totalReadingTime'), value: formatTime(analytics.totalReadingTimeSeconds), icon: Clock, color: 'text-orange-500' },
+    { title: t('analytics.completionRate'), value: `${analytics.completionRate.toFixed(1)}%`, icon: Target, color: 'text-purple-500' },
   ];
 
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Analytics</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('analytics.title')}</h2>
       </div>
 
       <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
@@ -72,28 +74,28 @@ export default function AnalyticsPage() {
       <Card>
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
-            <Sparkles className="h-5 w-5" /> Recent Activity
+            <Sparkles className="h-5 w-5" /> {t('analytics.recentActivity')}
           </CardTitle>
-          <CardDescription>Latest reading progress across the platform.</CardDescription>
+          <CardDescription>{t('analytics.recentActivityDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           {analytics.recentActivity.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No reading activity yet.</div>
+            <div className="text-center py-8 text-muted-foreground">{t('analytics.noActivity')}</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Book</TableHead>
-                  <TableHead>Progress</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead>Reading Time</TableHead>
-                  <TableHead>Interactions</TableHead>
+                  <TableHead>{t('analytics.book')}</TableHead>
+                  <TableHead>{t('analytics.progress')}</TableHead>
+                  <TableHead>{t('analytics.status')}</TableHead>
+                  <TableHead>{t('analytics.readingTime')}</TableHead>
+                  <TableHead>{t('analytics.interactions')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {analytics.recentActivity.map((item) => (
                   <TableRow key={item.id}>
-                    <TableCell className="font-medium">{item.bookTitle || 'Unknown'}</TableCell>
+                    <TableCell className="font-medium">{item.bookTitle || t('analytics.unknown')}</TableCell>
                     <TableCell>
                       <div className="flex items-center gap-2">
                         <div className="h-2 w-24 bg-muted rounded-full overflow-hidden">
@@ -109,7 +111,7 @@ export default function AnalyticsPage() {
                     </TableCell>
                     <TableCell>
                       <Badge variant={item.isCompleted ? 'default' : 'secondary'}>
-                        {item.isCompleted ? 'Completed' : 'Reading'}
+                        {item.isCompleted ? t('analytics.completed') : t('analytics.reading')}
                       </Badge>
                     </TableCell>
                     <TableCell>{formatTime(item.readingTimeSeconds)}</TableCell>

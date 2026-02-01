@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -17,6 +18,7 @@ import { Plus, GraduationCap, Trash2, Users } from 'lucide-react';
 import { getErrorMessage } from '@/lib/utils';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 export default function ClassesPage() {
   const [classes, setClasses] = useState<ClassResponse[]>([]);
@@ -24,6 +26,7 @@ export default function ClassesPage() {
   const [isOpen, setIsOpen] = useState(false);
   const [error, setError] = useState<string | null>(null);
   const [form, setForm] = useState({ name: '', gradeLevel: 1, teacherId: '' });
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadClasses();
@@ -58,7 +61,7 @@ export default function ClassesPage() {
   };
 
   const handleDelete = async (id: string) => {
-    if (!confirm('Delete this class?')) return;
+    if (!confirm(t('school.classes.confirmDelete'))) return;
     try {
       await api.delete(`/api/classes/${id}`);
       setClasses(classes.filter(c => c.id !== id));
@@ -70,14 +73,15 @@ export default function ClassesPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Classes</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('school.classes.title')}</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" /> New Class</Button>
+            <Button><Plus className="mr-2 h-4 w-4" /> {t('school.classes.newClass')}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Create New Class</DialogTitle>
+              <DialogTitle>{t('school.classes.createNewClass')}</DialogTitle>
+              <DialogDescription className="sr-only">{t('school.classes.createNewClass')}</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">
               {error && (
@@ -87,16 +91,16 @@ export default function ClassesPage() {
                 </Alert>
               )}
               <div className="space-y-2">
-                <Label>Class Name</Label>
+                <Label>{t('school.classes.className')}</Label>
                 <Input
                   value={form.name}
                   onChange={(e) => setForm({ ...form, name: e.target.value })}
-                  placeholder="e.g. 1-A"
+                  placeholder={t('school.classes.classNamePlaceholder')}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label>Grade Level</Label>
+                <Label>{t('school.classes.gradeLevel')}</Label>
                 <Input
                   type="number"
                   min={1}
@@ -105,7 +109,7 @@ export default function ClassesPage() {
                   onChange={(e) => setForm({ ...form, gradeLevel: parseInt(e.target.value) || 1 })}
                 />
               </div>
-              <Button type="submit" className="w-full">Create Class</Button>
+              <Button type="submit" className="w-full">{t('school.classes.createClass')}</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -115,7 +119,7 @@ export default function ClassesPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <GraduationCap className="h-5 w-5" />
-            All Classes ({classes.length})
+            {t('school.classes.allClasses', { count: classes.length })}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -124,15 +128,15 @@ export default function ClassesPage() {
               <div className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full" />
             </div>
           ) : classes.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No classes created yet.</div>
+            <div className="text-center py-8 text-muted-foreground">{t('school.classes.noClasses')}</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Name</TableHead>
-                  <TableHead>Grade</TableHead>
-                  <TableHead>Students</TableHead>
-                  <TableHead>Created</TableHead>
+                  <TableHead>{t('school.classes.name')}</TableHead>
+                  <TableHead>{t('school.classes.grade')}</TableHead>
+                  <TableHead>{t('school.classes.students')}</TableHead>
+                  <TableHead>{t('school.classes.created')}</TableHead>
                   <TableHead></TableHead>
                 </TableRow>
               </TableHeader>
@@ -140,7 +144,7 @@ export default function ClassesPage() {
                 {classes.map((cls) => (
                   <TableRow key={cls.id}>
                     <TableCell className="font-medium">{cls.name}</TableCell>
-                    <TableCell>Grade {cls.gradeLevel}</TableCell>
+                    <TableCell>{t('school.classes.gradeValue', { level: cls.gradeLevel })}</TableCell>
                     <TableCell>
                       <span className="flex items-center gap-1">
                         <Users className="h-3 w-3" /> {cls.studentCount}

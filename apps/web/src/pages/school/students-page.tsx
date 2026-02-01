@@ -9,6 +9,7 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
@@ -18,6 +19,7 @@ import { Plus, Users, BookOpen, Clock } from 'lucide-react';
 import { Alert, AlertDescription } from '@/components/ui/alert';
 import { AlertCircle } from 'lucide-react';
 import { getErrorMessage } from '@/lib/utils';
+import { useTranslation } from 'react-i18next';
 
 export default function StudentsPage() {
   const [students, setStudents] = useState<Student[]>([]);
@@ -30,6 +32,7 @@ export default function StudentsPage() {
     displayName: '',
     classId: '',
   });
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadStudents();
@@ -74,14 +77,15 @@ export default function StudentsPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Students</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('school.students.title')}</h2>
         <Dialog open={isOpen} onOpenChange={setIsOpen}>
           <DialogTrigger asChild>
-            <Button><Plus className="mr-2 h-4 w-4" /> Add Student</Button>
+            <Button><Plus className="mr-2 h-4 w-4" /> {t('school.students.addStudent')}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Add New Student</DialogTitle>
+              <DialogTitle>{t('school.students.addNewStudent')}</DialogTitle>
+              <DialogDescription className="sr-only">{t('school.students.addNewStudent')}</DialogDescription>
             </DialogHeader>
             <form onSubmit={handleCreate} className="space-y-4">
               {error && (
@@ -91,26 +95,26 @@ export default function StudentsPage() {
                 </Alert>
               )}
               <div className="space-y-2">
-                <Label>Display Name</Label>
+                <Label>{t('school.students.displayName')}</Label>
                 <Input
                   value={form.displayName}
                   onChange={(e) => setForm({ ...form, displayName: e.target.value })}
-                  placeholder="Student name"
+                  placeholder={t('school.students.namePlaceholder')}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label>Email</Label>
+                <Label>{t('school.students.email')}</Label>
                 <Input
                   type="email"
                   value={form.email}
                   onChange={(e) => setForm({ ...form, email: e.target.value })}
-                  placeholder="student@school.edu.tr"
+                  placeholder={t('school.students.emailPlaceholder')}
                   required
                 />
               </div>
               <div className="space-y-2">
-                <Label>Password</Label>
+                <Label>{t('school.students.password')}</Label>
                 <Input
                   type="password"
                   value={form.password}
@@ -118,7 +122,7 @@ export default function StudentsPage() {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">Add Student</Button>
+              <Button type="submit" className="w-full">{t('school.students.addStudentBtn')}</Button>
             </form>
           </DialogContent>
         </Dialog>
@@ -128,7 +132,7 @@ export default function StudentsPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            All Students ({students.length})
+            {t('school.students.allStudents', { count: students.length })}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -137,16 +141,16 @@ export default function StudentsPage() {
               <div className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full" />
             </div>
           ) : students.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No students enrolled yet.</div>
+            <div className="text-center py-8 text-muted-foreground">{t('school.students.noStudents')}</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Books Read</TableHead>
-                  <TableHead>Reading Time</TableHead>
-                  <TableHead>Streak</TableHead>
+                  <TableHead>{t('school.students.student')}</TableHead>
+                  <TableHead>{t('school.students.class')}</TableHead>
+                  <TableHead>{t('school.students.booksRead')}</TableHead>
+                  <TableHead>{t('school.students.readingTime')}</TableHead>
+                  <TableHead>{t('school.students.streak')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -161,7 +165,7 @@ export default function StudentsPage() {
                       </div>
                     </TableCell>
                     <TableCell className="text-muted-foreground">
-                      {student.className || 'Unassigned'}
+                      {student.className || t('school.students.unassigned')}
                     </TableCell>
                     <TableCell>
                       <span className="flex items-center gap-1">
@@ -174,7 +178,7 @@ export default function StudentsPage() {
                       </span>
                     </TableCell>
                     <TableCell className="font-medium">
-                      {student.currentStreak > 0 ? `${student.currentStreak} days` : '-'}
+                      {student.currentStreak > 0 ? t('school.students.days', { count: student.currentStreak }) : '-'}
                     </TableCell>
                   </TableRow>
                 ))}

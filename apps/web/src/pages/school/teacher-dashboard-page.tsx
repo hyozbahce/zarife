@@ -9,12 +9,14 @@ import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@
 import {
   Dialog,
   DialogContent,
+  DialogDescription,
   DialogHeader,
   DialogTitle,
   DialogTrigger,
 } from '@/components/ui/dialog';
 import { GraduationCap, Users, BookOpen, Clock, Target, Send } from 'lucide-react';
 import { Label } from '@/components/ui/label';
+import { useTranslation } from 'react-i18next';
 
 export default function TeacherDashboardPage() {
   const [classes, setClasses] = useState<ClassResponse[]>([]);
@@ -24,6 +26,7 @@ export default function TeacherDashboardPage() {
   const [selectedClass, setSelectedClass] = useState<string>('');
   const [selectedBook, setSelectedBook] = useState<string>('');
   const [isAssignOpen, setIsAssignOpen] = useState(false);
+  const { t } = useTranslation();
 
   useEffect(() => {
     Promise.all([
@@ -57,40 +60,41 @@ export default function TeacherDashboardPage() {
   return (
     <div className="flex-1 space-y-6 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">Teacher Dashboard</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('school.teacher.title')}</h2>
         <Dialog open={isAssignOpen} onOpenChange={setIsAssignOpen}>
           <DialogTrigger asChild>
-            <Button><Send className="mr-2 h-4 w-4" /> Assign Book</Button>
+            <Button><Send className="mr-2 h-4 w-4" /> {t('school.teacher.assignBook')}</Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>Assign Book to Class</DialogTitle>
+              <DialogTitle>{t('school.teacher.assignBookToClass')}</DialogTitle>
+              <DialogDescription className="sr-only">{t('school.teacher.assignBookToClass')}</DialogDescription>
             </DialogHeader>
             <div className="space-y-4">
               <div className="space-y-2">
-                <Label>Select Book</Label>
+                <Label>{t('school.teacher.selectBook')}</Label>
                 <select
                   value={selectedBook}
                   onChange={(e) => setSelectedBook(e.target.value)}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
                 >
-                  <option value="">Choose a book...</option>
+                  <option value="">{t('school.teacher.chooseBook')}</option>
                   {books.map(b => <option key={b.id} value={b.id}>{b.title}</option>)}
                 </select>
               </div>
               <div className="space-y-2">
-                <Label>Select Class</Label>
+                <Label>{t('school.teacher.selectClass')}</Label>
                 <select
                   value={selectedClass}
                   onChange={(e) => setSelectedClass(e.target.value)}
                   className="flex h-9 w-full rounded-md border border-input bg-transparent px-3 py-1 text-sm"
                 >
-                  <option value="">Choose a class...</option>
-                  {classes.map(c => <option key={c.id} value={c.id}>{c.name} (Grade {c.gradeLevel})</option>)}
+                  <option value="">{t('school.teacher.chooseClass')}</option>
+                  {classes.map(c => <option key={c.id} value={c.id}>{c.name} ({t('school.teacher.gradeValue', { level: c.gradeLevel })})</option>)}
                 </select>
               </div>
               <Button onClick={handleAssign} className="w-full" disabled={!selectedBook || !selectedClass}>
-                Assign
+                {t('school.teacher.assign')}
               </Button>
             </div>
           </DialogContent>
@@ -101,7 +105,7 @@ export default function TeacherDashboardPage() {
       <div className="grid gap-4 md:grid-cols-4">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">My Classes</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('school.teacher.myClasses')}</CardTitle>
             <GraduationCap className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -110,7 +114,7 @@ export default function TeacherDashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Total Students</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('school.teacher.totalStudents')}</CardTitle>
             <Users className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -119,7 +123,7 @@ export default function TeacherDashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Books Completed</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('school.teacher.booksCompleted')}</CardTitle>
             <BookOpen className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -128,7 +132,7 @@ export default function TeacherDashboardPage() {
         </Card>
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">Completion Rate</CardTitle>
+            <CardTitle className="text-sm font-medium">{t('school.teacher.completionRate')}</CardTitle>
             <Target className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
@@ -140,26 +144,26 @@ export default function TeacherDashboardPage() {
       {/* Classes Overview */}
       <Card>
         <CardHeader>
-          <CardTitle>Class Overview</CardTitle>
-          <CardDescription>Students enrolled across your classes.</CardDescription>
+          <CardTitle>{t('school.teacher.classOverview')}</CardTitle>
+          <CardDescription>{t('school.teacher.classOverviewDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           {classes.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">No classes assigned yet.</p>
+            <p className="text-sm text-muted-foreground py-4 text-center">{t('school.teacher.noClassesAssigned')}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Grade</TableHead>
-                  <TableHead>Students</TableHead>
+                  <TableHead>{t('school.teacher.class')}</TableHead>
+                  <TableHead>{t('school.teacher.grade')}</TableHead>
+                  <TableHead>{t('school.teacher.students')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {classes.map(cls => (
                   <TableRow key={cls.id}>
                     <TableCell className="font-medium">{cls.name}</TableCell>
-                    <TableCell>Grade {cls.gradeLevel}</TableCell>
+                    <TableCell>{t('school.teacher.gradeValue', { level: cls.gradeLevel })}</TableCell>
                     <TableCell><Badge variant="secondary">{cls.studentCount}</Badge></TableCell>
                   </TableRow>
                 ))}
@@ -172,31 +176,31 @@ export default function TeacherDashboardPage() {
       {/* Student Progress */}
       <Card>
         <CardHeader>
-          <CardTitle>Student Progress</CardTitle>
-          <CardDescription>Reading activity across all students.</CardDescription>
+          <CardTitle>{t('school.teacher.studentProgress')}</CardTitle>
+          <CardDescription>{t('school.teacher.studentProgressDesc')}</CardDescription>
         </CardHeader>
         <CardContent>
           {students.length === 0 ? (
-            <p className="text-sm text-muted-foreground py-4 text-center">No students enrolled yet.</p>
+            <p className="text-sm text-muted-foreground py-4 text-center">{t('school.teacher.noStudentsEnrolled')}</p>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Student</TableHead>
-                  <TableHead>Class</TableHead>
-                  <TableHead>Books Read</TableHead>
-                  <TableHead>Reading Time</TableHead>
-                  <TableHead>Streak</TableHead>
+                  <TableHead>{t('school.teacher.student')}</TableHead>
+                  <TableHead>{t('school.teacher.class')}</TableHead>
+                  <TableHead>{t('school.teacher.booksRead')}</TableHead>
+                  <TableHead>{t('school.teacher.readingTime')}</TableHead>
+                  <TableHead>{t('school.teacher.streak')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
                 {students.map(s => (
                   <TableRow key={s.id}>
                     <TableCell className="font-medium">{s.displayName}</TableCell>
-                    <TableCell>{s.className || 'Unassigned'}</TableCell>
+                    <TableCell>{s.className || t('school.teacher.unassigned')}</TableCell>
                     <TableCell>{s.totalBooksRead}</TableCell>
                     <TableCell>{formatTime(s.totalReadingTimeSeconds)}</TableCell>
-                    <TableCell>{s.currentStreak > 0 ? `${s.currentStreak}d` : '-'}</TableCell>
+                    <TableCell>{s.currentStreak > 0 ? t('school.students.days', { count: s.currentStreak }) : '-'}</TableCell>
                   </TableRow>
                 ))}
               </TableBody>

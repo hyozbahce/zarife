@@ -5,6 +5,7 @@ import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table';
 import { Users } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface UserItem {
   id: string;
@@ -18,6 +19,7 @@ export default function UsersPage() {
   const [users, setUsers] = useState<UserItem[]>([]);
   const [roleFilter, setRoleFilter] = useState('');
   const [isLoading, setIsLoading] = useState(true);
+  const { t } = useTranslation();
 
   useEffect(() => {
     loadUsers();
@@ -46,18 +48,25 @@ export default function UsersPage() {
   return (
     <div className="flex-1 space-y-4 p-8 pt-6">
       <div className="flex items-center justify-between">
-        <h2 className="text-3xl font-bold tracking-tight">User Management</h2>
+        <h2 className="text-3xl font-bold tracking-tight">{t('management.users.title')}</h2>
       </div>
 
       <div className="flex gap-1">
-        {['', 'PlatformAdmin', 'SchoolAdmin', 'Teacher', 'Parent', 'Student'].map((r) => (
+        {[
+          { value: '', label: t('management.users.all') },
+          { value: 'PlatformAdmin', label: t('management.users.rolePlatformAdmin') },
+          { value: 'SchoolAdmin', label: t('management.users.roleSchoolAdmin') },
+          { value: 'Teacher', label: t('management.users.roleTeacher') },
+          { value: 'Parent', label: t('management.users.roleParent') },
+          { value: 'Student', label: t('management.users.roleStudent') },
+        ].map((r) => (
           <Button
-            key={r}
-            variant={roleFilter === r ? 'default' : 'outline'}
+            key={r.value}
+            variant={roleFilter === r.value ? 'default' : 'outline'}
             size="sm"
-            onClick={() => setRoleFilter(r)}
+            onClick={() => setRoleFilter(r.value)}
           >
-            {r || 'All'}
+            {r.label}
           </Button>
         ))}
       </div>
@@ -66,7 +75,7 @@ export default function UsersPage() {
         <CardHeader>
           <CardTitle className="flex items-center gap-2">
             <Users className="h-5 w-5" />
-            Users ({users.length})
+            {t('management.users.usersCount', { count: users.length })}
           </CardTitle>
         </CardHeader>
         <CardContent>
@@ -75,14 +84,14 @@ export default function UsersPage() {
               <div className="animate-spin h-6 w-6 border-4 border-primary border-t-transparent rounded-full" />
             </div>
           ) : users.length === 0 ? (
-            <div className="text-center py-8 text-muted-foreground">No users found.</div>
+            <div className="text-center py-8 text-muted-foreground">{t('management.users.noUsers')}</div>
           ) : (
             <Table>
               <TableHeader>
                 <TableRow>
-                  <TableHead>Email</TableHead>
-                  <TableHead>Role</TableHead>
-                  <TableHead>Tenant</TableHead>
+                  <TableHead>{t('management.users.email')}</TableHead>
+                  <TableHead>{t('management.users.role')}</TableHead>
+                  <TableHead>{t('management.users.tenant')}</TableHead>
                 </TableRow>
               </TableHeader>
               <TableBody>
@@ -95,7 +104,7 @@ export default function UsersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="text-muted-foreground font-mono text-xs">
-                      {user.tenantId ? user.tenantId.substring(0, 8) + '...' : 'Platform'}
+                      {user.tenantId ? user.tenantId.substring(0, 8) + '...' : t('management.users.platform')}
                     </TableCell>
                   </TableRow>
                 ))}

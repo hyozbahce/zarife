@@ -4,6 +4,7 @@ import { Howl } from 'howler';
 import type { BookDetail, BookPage } from '@/types/books';
 import { Button } from '@/components/ui/button';
 import { ChevronLeft, ChevronRight, X, Volume2, VolumeX, Maximize, Minimize } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 
 interface BookReaderProps {
   book: BookDetail;
@@ -18,6 +19,7 @@ export function BookReader({ book, onClose, onProgress }: BookReaderProps) {
   const [isFullscreen, setIsFullscreen] = useState(false);
   const containerRef = useRef<HTMLDivElement>(null);
   const soundRef = useRef<Howl | null>(null);
+  const { t } = useTranslation();
 
   const currentPage = book.pages[currentPageIndex];
   const totalPages = book.pages.length;
@@ -111,7 +113,7 @@ export function BookReader({ book, onClose, onProgress }: BookReaderProps) {
         </div>
         <div className="flex items-center gap-2">
           <span className="text-sm text-white/70">
-            Page {currentPageIndex + 1} of {totalPages}
+            {t('library.page', { current: currentPageIndex + 1, total: totalPages })}
           </span>
           <Button variant="ghost" size="icon" onClick={toggleMute} className="text-white hover:bg-white/20">
             {isMuted ? <VolumeX className="h-4 w-4" /> : <Volume2 className="h-4 w-4" />}
@@ -132,7 +134,7 @@ export function BookReader({ book, onClose, onProgress }: BookReaderProps) {
             isNarrating={isNarrating}
           />
         ) : (
-          <div className="text-white text-xl">No pages available</div>
+          <div className="text-white text-xl">{t('library.noPagesAvailable')}</div>
         )}
 
         {/* Navigation arrows */}
@@ -167,7 +169,7 @@ export function BookReader({ book, onClose, onProgress }: BookReaderProps) {
               className="mt-2"
               onClick={() => playNarration(currentPage)}
             >
-              <Volume2 className="mr-2 h-4 w-4" /> Listen
+              <Volume2 className="mr-2 h-4 w-4" /> {t('library.listen')}
             </Button>
           )}
         </div>

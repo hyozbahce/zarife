@@ -1,12 +1,15 @@
 import { SidebarInset, SidebarProvider, SidebarTrigger } from "@/components/ui/sidebar"
 import { AppSidebar } from "./app-sidebar"
 import { Separator } from "@/components/ui/separator"
+import { useTranslation } from "react-i18next"
 
 interface DashboardLayoutProps {
   children: React.ReactNode
 }
 
 export function DashboardLayout({ children }: DashboardLayoutProps) {
+  const { t } = useTranslation();
+
   return (
     <SidebarProvider>
       <AppSidebar />
@@ -16,7 +19,7 @@ export function DashboardLayout({ children }: DashboardLayoutProps) {
             <SidebarTrigger className="-ml-1" />
             <Separator orientation="vertical" className="mr-2 h-4" />
             <div className="flex items-center gap-2">
-               <span className="text-sm font-medium">Dashboard</span>
+               <span className="text-sm font-medium">{t('nav.dashboard')}</span>
             </div>
           </div>
         </header>
